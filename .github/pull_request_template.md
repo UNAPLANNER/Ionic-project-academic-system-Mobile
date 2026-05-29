@@ -28,6 +28,10 @@ Closes #
 - [ ] Tested on mobile view (browser dev tools)
 - [ ] No console errors
 
+## Related Issue
+<!-- Link the issue this PR resolves -->
+Closes #
+
 ## Screenshots (if applicable)
 <!-- Add screenshots if there are UI changes -->
 
