@@ -118,6 +118,48 @@
   }
 }
 
+// Sección de credenciales demo
+.demo-section {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #f5f3ff;
+  border-radius: 12px;
+  border: 1px dashed #c4b5fd;
+
+  .demo-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 10px;
+  }
+
+  .demo-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    &:last-child { margin-bottom: 0; }
+
+    .demo-role {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4f46e5;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .demo-data {
+      font-size: 12px;
+      color: #4b5563;
+      font-family: monospace;
+      line-height: 1.6;
+    }
+  }
+}
+
 // Link de registro
 .register-link {
   text-align: center;
