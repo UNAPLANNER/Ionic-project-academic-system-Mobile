@@ -1,0 +1,107 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Registrarse</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="register-container">
+    <div class="header">
+      <h1>Crear Cuenta</h1>
+      <p>Regístrate para acceder al sistema</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Name Input -->
+      <ion-item lines="full">
+        <ion-label position="floating">Nombre Completo</ion-label>
+        <ion-input
+          formControlName="name"
+          type="text"
+          placeholder="Tu nombre"
+          [class.ion-invalid]="submitted && f['name'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="submitted && f['name'].errors">
+        <p class="error-text" *ngIf="f['name'].errors['required']">El nombre es requerido</p>
+        <p class="error-text" *ngIf="f['name'].errors['minlength']">Mínimo 3 caracteres</p>
+      </ion-text>
+
+      <!-- Email Input -->
+      <ion-item lines="full">
+        <ion-label position="floating">Email</ion-label>
+        <ion-input
+          formControlName="email"
+          type="email"
+          placeholder="tu@email.com"
+          [class.ion-invalid]="submitted && f['email'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="submitted && f['email'].errors">
+        <p class="error-text" *ngIf="f['email'].errors['required']">El email es requerido</p>
+        <p class="error-text" *ngIf="f['email'].errors['email']">Email inválido</p>
+      </ion-text>
+
+      <!-- Role Selection -->
+      <ion-item lines="full">
+        <ion-label position="floating">Tipo de Usuario</ion-label>
+        <ion-select formControlName="role" interface="popover">
+          <ion-select-option value="student">Estudiante</ion-select-option>
+          <ion-select-option value="teacher">Profesor</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Password Input -->
+      <ion-item lines="full">
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input
+          formControlName="password"
+          type="password"
+          placeholder="••••••••"
+          [class.ion-invalid]="submitted && f['password'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="submitted && f['password'].errors">
+        <p class="error-text" *ngIf="f['password'].errors['required']">La contraseña es requerida</p>
+        <p class="error-text" *ngIf="f['password'].errors['minlength']">Mínimo 6 caracteres</p>
+      </ion-text>
+
+      <!-- Confirm Password Input -->
+      <ion-item lines="full">
+        <ion-label position="floating">Confirmar Contraseña</ion-label>
+        <ion-input
+          formControlName="confirmPassword"
+          type="password"
+          placeholder="••••••••"
+          [class.ion-invalid]="submitted && (f['confirmPassword'].errors || registerForm.errors?.['passwordMismatch'])"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="submitted && f['confirmPassword'].errors">
+        <p class="error-text" *ngIf="f['confirmPassword'].errors['required']">Confirmar contraseña es requerido</p>
+      </ion-text>
+      <ion-text color="danger" *ngIf="submitted && registerForm.errors?.['passwordMismatch']">
+        <p class="error-text">Las contraseñas no coinciden</p>
+      </ion-text>
+
+      <!-- Submit Button -->
+      <ion-button
+        expand="block"
+        color="primary"
+        type="submit"
+        [disabled]="loading"
+        class="register-button"
+      >
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span *ngIf="!loading">Crear Cuenta</span>
+      </ion-button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="login-link">
+      <p>¿Ya tienes cuenta? <ion-router-link routerLink="/auth/login">Inicia sesión</ion-router-link></p>
+    </div>
+  </div>
+</ion-content>
