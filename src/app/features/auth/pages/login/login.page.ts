@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
 
@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule]
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IonicModule, RouterModule]
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;

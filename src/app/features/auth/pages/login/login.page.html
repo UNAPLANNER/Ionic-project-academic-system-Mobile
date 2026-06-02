@@ -1,70 +1,96 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Iniciar Sesión</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="transparent">
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <div class="login-container">
-    <div class="header">
+<ion-content [fullscreen]="true" class="login-content">
+
+  <div class="page-wrapper">
+
+    <!-- Logo / Título -->
+    <div class="brand">
+      <div class="brand-icon">
+        <ion-icon name="school"></ion-icon>
+      </div>
       <h1>Sistema Académico</h1>
-      <p>Ingresa tus credenciales</p>
+      <p>Inicia sesión para continuar</p>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Email Input -->
-      <ion-item lines="full">
-        <ion-label position="floating">Email</ion-label>
-        <ion-input
-          formControlName="email"
-          type="email"
-          placeholder="tu@email.com"
-          [class.ion-invalid]="submitted && f['email'].errors"
-        ></ion-input>
-      </ion-item>
-      <ion-text color="danger" *ngIf="submitted && f['email'].errors">
-        <p class="error-text" *ngIf="f['email'].errors['required']">El email es requerido</p>
-        <p class="error-text" *ngIf="f['email'].errors['email']">Email inválido</p>
-      </ion-text>
+    <!-- Tarjeta del formulario -->
+    <div class="card">
 
-      <!-- Password Input -->
-      <ion-item lines="full">
-        <ion-label position="floating">Contraseña</ion-label>
-        <ion-input
-          formControlName="password"
-          type="password"
-          placeholder="••••••••"
-          [class.ion-invalid]="submitted && f['password'].errors"
-        ></ion-input>
-      </ion-item>
-      <ion-text color="danger" *ngIf="submitted && f['password'].errors">
-        <p class="error-text" *ngIf="f['password'].errors['required']">La contraseña es requerida</p>
-        <p class="error-text" *ngIf="f['password'].errors['minlength']">Mínimo 6 caracteres</p>
-      </ion-text>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-      <!-- Submit Button -->
-      <ion-button
-        expand="block"
-        color="primary"
-        type="submit"
-        [disabled]="loading"
-        class="login-button"
-      >
-        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
-        <span *ngIf="!loading">Iniciar Sesión</span>
-      </ion-button>
-    </form>
+        <!-- Email -->
+        <div class="field">
+          <ion-item lines="none" class="input-item">
+            <ion-icon name="mail-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Correo electrónico</ion-label>
+            <ion-input
+              formControlName="email"
+              type="email"
+              placeholder="tu@correo.com"
+              [class.ion-invalid]="submitted && f['email'].errors">
+            </ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="submitted && f['email'].errors">
+            <p class="error-text" *ngIf="f['email'].errors['required']">El correo es requerido</p>
+            <p class="error-text" *ngIf="f['email'].errors['email']">Correo inválido</p>
+          </ion-text>
+        </div>
 
-    <!-- Register Link -->
-    <div class="register-link">
-      <p>¿No tienes cuenta? <ion-router-link routerLink="/auth/register">Regístrate aquí</ion-router-link></p>
+        <!-- Contraseña -->
+        <div class="field">
+          <ion-item lines="none" class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
+            <ion-input
+              formControlName="password"
+              type="password"
+              placeholder="••••••••"
+              [class.ion-invalid]="submitted && f['password'].errors">
+            </ion-input>
+          </ion-item>
+          <ion-text color="danger" *ngIf="submitted && f['password'].errors">
+            <p class="error-text" *ngIf="f['password'].errors['required']">La contraseña es requerida</p>
+            <p class="error-text" *ngIf="f['password'].errors['minlength']">Mínimo 6 caracteres</p>
+          </ion-text>
+        </div>
+
+        <!-- Botón login -->
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="loading"
+          class="submit-btn">
+          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+          <span *ngIf="!loading">Iniciar Sesión</span>
+        </ion-button>
+
+      </form>
+
+      <!-- Link registro -->
+      <div class="register-link">
+        <p>¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a></p>
+      </div>
+
+      <!-- Credenciales demo -->
+      <div class="demo-section">
+        <p class="demo-title">Credenciales Demo</p>
+        <div class="demo-item">
+          <span class="demo-role">Estudiante</span>
+          <span class="demo-data">reichel.corrales.vindas@est.una.ac.cr</span>
+          <span class="demo-data">Recv30082000</span>
+        </div>
+        <div class="demo-item">
+          <span class="demo-role">Profesor</span>
+          <span class="demo-data">rachel@una.ac.cr</span>
+          <span class="demo-data">123456</span>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Demo Credentials -->
-    <div class="demo-section">
-      <h3>Credenciales Demo</h3>
-      <p><strong>Estudiante:</strong><br>reichel.corrales.vindas@est.una.ac.cr / Recv30082000</p>
-      <p><strong>Profesor:</strong><br>rachel@una.ac.cr / 123456</p>
-    </div>
   </div>
+
 </ion-content>
