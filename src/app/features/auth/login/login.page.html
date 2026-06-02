@@ -1,0 +1,61 @@
+<ion-content class="login-content">
+
+  <div class="login-container">
+
+    <!-- Logo / Header -->
+    <div class="login-header">
+      <ion-icon name="school-outline" class="login-icon"></ion-icon>
+      <h1>Sistema Académico</h1>
+      <p>Inicia sesión en tu cuenta</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+
+      <!-- Email -->
+      <ion-item [class.ion-invalid]="emailControl?.invalid && emailControl?.touched"
+                [class.ion-valid]="emailControl?.valid">
+        <ion-label position="floating">Correo electrónico</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+          autocomplete="email">
+        </ion-input>
+        <ion-note slot="error">Ingresa un correo electrónico válido</ion-note>
+      </ion-item>
+
+      <!-- Password -->
+      <ion-item [class.ion-invalid]="passwordControl?.invalid && passwordControl?.touched"
+                [class.ion-valid]="passwordControl?.valid">
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password">
+        </ion-input>
+        <ion-button slot="end" fill="clear" (click)="togglePassword()">
+          <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+        </ion-button>
+        <ion-note slot="error">La contraseña debe tener al menos 6 caracteres</ion-note>
+      </ion-item>
+
+      <!-- Login Button -->
+      <ion-button
+        expand="block"
+        type="submit"
+        class="login-btn"
+        [disabled]="loginForm.invalid">
+        Iniciar sesión
+      </ion-button>
+
+    </form>
+
+    <!-- Register link -->
+    <div class="register-link">
+      <p>¿No tienes cuenta?
+        <span (click)="goToRegister()">Regístrate aquí</span>
+      </p>
+    </div>
+
+  </div>
+
+</ion-content>
