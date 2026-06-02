@@ -4,6 +4,5 @@ export interface Student {
   email: string;
   career: string;
   semester: number;
-  photoUrl?: string;
   createdAt: Date;
 }

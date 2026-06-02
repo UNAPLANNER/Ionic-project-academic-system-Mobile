@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cursos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Cursos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="placeholder-container">
+    <ion-card color="success">
+      <ion-card-header>
+        <ion-card-title>📖 Sección en Desarrollo</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>La gestión de cursos se está implementando.</p>
+        <p><strong>Funcionalidades próximas:</strong></p>
+        <ul>
+          <li>Listar cursos disponibles</li>
+          <li>Crear nuevo curso (Profesor)</li>
+          <li>Ver estudiantes inscritos</li>
+          <li>Editar información del curso</li>
+          <li>Eliminar curso</li>
+          <li>Asignar evaluaciones a curso</li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" color="secondary" (click)="goBack()">
+      Volver al Dashboard
+    </ion-button>
+  </div>
+</ion-content>

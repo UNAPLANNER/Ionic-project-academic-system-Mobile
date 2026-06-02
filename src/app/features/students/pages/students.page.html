@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Estudiantes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Estudiantes</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="placeholder-container">
+    <ion-card color="primary">
+      <ion-card-header>
+        <ion-card-title>📚 Sección en Desarrollo</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>La gestión de estudiantes se está implementando.</p>
+        <p><strong>Funcionalidades próximas:</strong></p>
+        <ul>
+          <li>Listar estudiantes</li>
+          <li>Crear nuevo estudiante</li>
+          <li>Editar información de estudiante</li>
+          <li>Eliminar estudiante</li>
+          <li>Ver detalles y desempeño</li>
+          <li>Subir fotos</li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" color="secondary" (click)="goBack()">
+      Volver al Dashboard
+    </ion-button>
+  </div>
+</ion-content>

@@ -1,0 +1,18 @@
+.placeholder-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+ion-card {
+  ul {
+    padding-left: 20px;
+    margin: 15px 0 0 0;
+
+    li {
+      margin: 8px 0;
+      color: #333;
+    }
+  }
+}
