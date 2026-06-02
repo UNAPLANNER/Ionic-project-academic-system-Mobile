@@ -66,11 +66,10 @@ export class LoginPage implements OnInit {
       const { email, password } = this.loginForm.value;
       const user = await this.authService.login(email, password);
 
-      // Mostrar mensaje de éxito
       this.presentToast(`¡Bienvenido ${user.name}!`, 'success');
 
-      // Redirigir al dashboard
-      this.router.navigateByUrl(this.returnUrl);
+      const destination = user.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard';
+      this.router.navigateByUrl(destination);
     } catch (error: any) {
       this.presentAlert('Error de Autenticación', error.message || 'No se pudo iniciar sesión');
     } finally {

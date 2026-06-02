@@ -8,33 +8,23 @@ const routes: Routes = [
     loadChildren: () => import('./features/auth/auth-module').then(m => m.AuthModule)
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('./features/dashboard/dashboard-module').then(m => m.DashboardModule),
+    path: 'teacher',
+    loadChildren: () => import('./features/teacher-tabs/teacher-tabs.module').then(m => m.TeacherTabsModule),
     canActivate: [authGuard]
   },
   {
-    path: 'students',
-    loadChildren: () => import('./features/students/students-module').then(m => m.StudentsModule),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'courses',
-    loadChildren: () => import('./features/courses/courses-module').then(m => m.CoursesModule),
-    canActivate: [authGuard]
-  },
-  {
-    path: 'evaluations',
-    loadChildren: () => import('./features/evaluations/evaluations-module').then(m => m.EvaluationsModule),
+    path: 'student',
+    loadChildren: () => import('./features/student-tabs/student-tabs.module').then(m => m.StudentTabsModule),
     canActivate: [authGuard]
   },
   {
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: '/auth/login',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: '/dashboard'
+    redirectTo: '/auth/login'
   }
 ];
 

@@ -1,170 +1,112 @@
 import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from '@angular/fire/auth';
-import { Firestore, collection, doc, setDoc, getDoc, DocumentData } from '@angular/fire/firestore';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Auth, signInWithCustomToken, signOut } from '@angular/fire/auth';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+interface AuthResponse {
+  message: string;
+  token: string;
+  user: User;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private readonly USER_KEY = 'auth_user';
+
+  private currentUserSubject = new BehaviorSubject<User | null>(this.loadStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
+  public isLoading$ = new BehaviorSubject<boolean>(false).asObservable();
 
-  private isLoadingSubject = new BehaviorSubject<boolean>(true);
-  public isLoading$ = this.isLoadingSubject.asObservable();
+  constructor(private http: HttpClient, private firebaseAuth: Auth) {}
 
-  constructor(
-    private auth: Auth,
-    private firestore: Firestore
-  ) {
-    this.initializeAuthListener();
-  }
-
-  /**
-   * Inicializa el listener de cambios de autenticación
-   */
-  private initializeAuthListener(): void {
-    onAuthStateChanged(this.auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        // Usuario está autenticado, obtener datos de Firestore
-        await this.loadUserFromFirestore(firebaseUser.uid);
-      } else {
-        // Usuario no autenticado
-        this.currentUserSubject.next(null);
-      }
-      this.isLoadingSubject.next(false);
-    });
-  }
-
-  /**
-   * Carga datos del usuario desde Firestore
-   */
-  private async loadUserFromFirestore(uid: string): Promise<void> {
+  private loadStoredUser(): User | null {
     try {
-      const userDocRef = doc(this.firestore, 'users', uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        const userData = userDoc.data() as DocumentData;
-        const user: User = {
-          id: uid,
-          email: userData['email'] || '',
-          name: userData['name'] || '',
-          role: userData['role'] || 'student'
-        };
-        this.currentUserSubject.next(user);
-      }
-    } catch (error) {
-      console.error('Error loading user from Firestore:', error);
+      const stored = localStorage.getItem(this.USER_KEY);
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
     }
   }
 
-  /**
-   * Registrar nuevo usuario
-   */
-  async register(email: string, password: string, name: string, role: 'student' | 'teacher'): Promise<User> {
-    try {
-      // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Crear documento en Firestore
-      const userDocRef = doc(this.firestore, 'users', uid);
-      const userData: User = {
-        id: uid,
-        email,
-        name,
-        role
-      };
-
-      await setDoc(userDocRef, userData);
-
-      // Actualizar el subject
-      this.currentUserSubject.next(userData);
-
-      return userData;
-    } catch (error: any) {
-      throw new Error(this.handleAuthError(error.code));
-    }
-  }
-
-  /**
-   * Iniciar sesión
-   */
   async login(email: string, password: string): Promise<User> {
     try {
-      this.isLoadingSubject.next(true);
-      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      await this.loadUserFromFirestore(userCredential.user.uid);
+      // 1. Backend valida email en Firestore y devuelve custom token
+      const response = await firstValueFrom(
+        this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
+      );
 
-      const currentUser = this.currentUserSubject.value;
-      if (!currentUser) {
-        throw new Error('No se pudo cargar los datos del usuario');
+      // 2. Intercambiar custom token por Firebase ID token
+      await signInWithCustomToken(this.firebaseAuth, response.token);
+
+      // 3. Guardar usuario
+      this.saveUser(response.user);
+      return response.user;
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        throw new Error(this.handleHttpError(error));
       }
-
-      return currentUser;
-    } catch (error: any) {
-      throw new Error(this.handleAuthError(error.code));
-    } finally {
-      this.isLoadingSubject.next(false);
+      throw new Error('Error al iniciar sesión. Intenta nuevamente');
     }
   }
 
-  /**
-   * Cerrar sesión
-   */
+  async register(email: string, password: string, name: string, role: 'student' | 'teacher'): Promise<User> {
+    try {
+      // Backend crea usuario en Firebase Auth + Firestore, devuelve custom token
+      const response = await firstValueFrom(
+        this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
+      );
+
+      // Intercambiar custom token por Firebase ID token
+      await signInWithCustomToken(this.firebaseAuth, response.token);
+
+      this.saveUser(response.user);
+      return response.user;
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        throw new Error(this.handleHttpError(error));
+      }
+      throw new Error('Error al registrarse. Intenta nuevamente');
+    }
+  }
+
+  async getIdToken(): Promise<string | null> {
+    return this.firebaseAuth.currentUser?.getIdToken() ?? null;
+  }
+
+  private saveUser(user: User) {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
   async logout(): Promise<void> {
     try {
-      await signOut(this.auth);
-      this.currentUserSubject.next(null);
-    } catch (error) {
-      console.error('Error logging out:', error);
-      throw error;
-    }
+      await signOut(this.firebaseAuth);
+    } catch { /* ignorar */ }
+    localStorage.removeItem(this.USER_KEY);
+    this.currentUserSubject.next(null);
   }
 
-  /**
-   * Obtener usuario actual
-   */
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Verificar si el usuario está autenticado
-   */
   isAuthenticated(): boolean {
     return this.currentUserSubject.value !== null;
   }
 
-  /**
-   * Obtener el rol del usuario actual
-   */
   getUserRole(): 'student' | 'teacher' | null {
     const user = this.currentUserSubject.value;
     return user ? user.role : null;
   }
 
-  /**
-   * Manejo de errores de autenticación
-   */
-  private handleAuthError(errorCode: string): string {
-    switch (errorCode) {
-      case 'auth/email-already-in-use':
-        return 'El email ya está registrado';
-      case 'auth/weak-password':
-        return 'La contraseña es muy débil';
-      case 'auth/invalid-email':
-        return 'Email inválido';
-      case 'auth/user-not-found':
-        return 'Usuario no encontrado';
-      case 'auth/wrong-password':
-        return 'Contraseña incorrecta';
-      case 'auth/too-many-requests':
-        return 'Demasiados intentos fallidos. Intenta más tarde';
-      default:
-        return 'Error de autenticación. Intenta nuevamente';
-    }
+  private handleHttpError(error: HttpErrorResponse): string {
+    if (!error.status || error.status === 0) return 'No se puede conectar al servidor';
+    if (error.status === 400) return error.error?.error || 'Datos incorrectos';
+    if (error.status === 401) return 'Email o contraseña incorrectos';
+    if (error.status === 404) return 'Usuario no encontrado';
+    if (error.status === 409) return 'El email ya está registrado';
+    return error.error?.error || 'Error. Intenta nuevamente';
   }
 }

@@ -94,8 +94,8 @@ export class RegisterPage implements OnInit {
 
       this.presentToast(`¡Bienvenido ${user.name}! Cuenta creada exitosamente`, 'success');
 
-      // Redirigir al dashboard
-      this.router.navigateByUrl('/dashboard');
+      const destination = user.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard';
+      this.router.navigateByUrl(destination);
     } catch (error: any) {
       this.presentAlert('Error de Registro', error.message || 'No se pudo crear la cuenta');
     } finally {

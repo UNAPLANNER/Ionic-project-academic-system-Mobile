@@ -1,40 +1,159 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+    <ion-title>{{ isTeacher ? 'Evaluaciones' : 'Mis Notas' }}</ion-title>
+    <ion-buttons slot="end" *ngIf="isTeacher">
+      <ion-button (click)="openCreate()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <ion-title>Evaluaciones</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Evaluaciones</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div class="placeholder-container">
-    <ion-card color="warning">
-      <ion-card-header>
-        <ion-card-title>✓ Sección en Desarrollo</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>La gestión de evaluaciones se está implementando.</p>
-        <p><strong>Funcionalidades próximas:</strong></p>
-        <ul>
-          <li>Listar evaluaciones (Exámenes, Tareas, Proyectos)</li>
-          <li>Registrar nueva evaluación (Profesor)</li>
-          <li>Ver evaluaciones asignadas a estudiante</li>
-          <li>Registrar calificaciones</li>
-          <li>Editar evaluación</li>
-          <li>Ver estadísticas de desempeño</li>
-        </ul>
-      </ion-card-content>
-    </ion-card>
+  <ion-refresher slot="fixed" (ionRefresh)="loadData(); $event.target.complete()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-    <ion-button expand="block" color="secondary" (click)="goBack()">
-      Volver al Dashboard
-    </ion-button>
+  <!-- Formulario (solo profesor) -->
+  <ion-card *ngIf="showForm && isTeacher">
+    <ion-card-header>
+      <ion-card-title>{{ editingId ? 'Editar' : 'Nueva' }} Evaluación</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="evalForm" (ngSubmit)="saveEval()">
+
+        <ion-item>
+          <ion-label>Estudiante</ion-label>
+          <ion-select formControlName="studentId" placeholder="Seleccionar">
+            <ion-select-option *ngFor="let s of students" [value]="s.id">{{ s.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Curso</ion-label>
+          <ion-select formControlName="courseId" placeholder="Seleccionar">
+            <ion-select-option *ngFor="let c of courses" [value]="c.id">{{ c.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Tipo</ion-label>
+          <ion-select formControlName="type">
+            <ion-select-option *ngFor="let t of evalTypes" [value]="t">{{ typeLabels[t] }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-input formControlName="description" type="text"></ion-input>
+        </ion-item>
+
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Nota</ion-label>
+              <ion-input formControlName="score" type="number" min="0"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Nota Máx.</ion-label>
+              <ion-input formControlName="maxScore" type="number" min="1"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-item>
+          <ion-label>Fecha</ion-label>
+          <ion-datetime-button datetime="evalDate"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="evalDate" formControlName="date" presentation="date"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" type="submit" [disabled]="loading || evalForm.invalid">
+              {{ editingId ? 'Actualizar' : 'Registrar' }}
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" fill="outline" color="medium" (click)="cancelForm()">
+              Cancelar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Loading -->
+  <div *ngIf="loading && !showForm" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
   </div>
+
+  <!-- Lista evaluaciones -->
+  <ion-list *ngIf="!loading || showForm">
+
+    <!-- Vista profesor -->
+    <ng-container *ngIf="isTeacher">
+      <ion-item-sliding *ngFor="let ev of evaluations">
+        <ion-item>
+          <ion-icon name="clipboard-outline" slot="start" color="warning"></ion-icon>
+          <ion-label>
+            <h2>{{ ev.description }}</h2>
+            <p>{{ getStudentName(ev.studentId) }} · {{ getCourseName(ev.courseId) }}</p>
+            <p>{{ typeLabels[ev.type] }} · {{ ev.date | date:'shortDate' }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="scorePercent(ev) >= 70 ? 'success' : 'danger'">
+            {{ ev.score }}/{{ ev.maxScore }}
+          </ion-badge>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="openEdit(ev)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="confirmDelete(ev)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ng-container>
+
+    <!-- Vista estudiante -->
+    <ng-container *ngIf="!isTeacher">
+      <ion-item *ngFor="let ev of evaluations">
+        <ion-icon name="school-outline" slot="start" [color]="scorePercent(ev) >= 70 ? 'success' : 'danger'"></ion-icon>
+        <ion-label>
+          <h2>{{ ev.description }}</h2>
+          <p>{{ getCourseName(ev.courseId) }} · {{ typeLabels[ev.type] }}</p>
+          <p>{{ ev.date | date:'mediumDate' }}</p>
+        </ion-label>
+        <ion-note slot="end">
+          <div class="ion-text-center">
+            <strong>{{ ev.score }}/{{ ev.maxScore }}</strong>
+            <p style="font-size:0.75rem; margin:0">{{ scorePercent(ev) }}%</p>
+          </div>
+        </ion-note>
+      </ion-item>
+    </ng-container>
+
+    <ion-item *ngIf="!loading && evaluations.length === 0">
+      <ion-label color="medium" class="ion-text-center">
+        {{ isTeacher ? 'No hay evaluaciones registradas' : 'No tienes evaluaciones aún' }}
+      </ion-label>
+    </ion-item>
+
+  </ion-list>
+
 </ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isTeacher">
+  <ion-fab-button color="warning" (click)="openCreate()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

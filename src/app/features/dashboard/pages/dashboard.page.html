@@ -1,73 +1,146 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Dashboard</ion-title>
+    <ion-title>{{ isTeacher ? 'Panel del Profesor' : 'Mi Panel' }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="logout()">
-        <ion-icon name="log-out"></ion-icon>
+        <ion-icon name="log-out-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div *ngIf="currentUser" class="dashboard-container">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && currentUser">
+
+    <!-- Bienvenida -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Bienvenido</ion-card-title>
+        <ion-card-subtitle>{{ isTeacher ? 'Profesor' : 'Estudiante' }}</ion-card-subtitle>
+        <ion-card-title>Hola, {{ currentUser.name }}</ion-card-title>
       </ion-card-header>
-      <ion-card-content>
-        <p><strong>Nombre:</strong> {{ currentUser.name }}</p>
-        <p><strong>Email:</strong> {{ currentUser.email }}</p>
-        <p><strong>Rol:</strong> {{ currentUser.role === 'student' ? 'Estudiante' : 'Profesor' }}</p>
-      </ion-card-content>
+      <ion-card-content>{{ currentUser.email }}</ion-card-content>
     </ion-card>
 
-    <div class="menu-section">
-      <h2>Menú Principal</h2>
-      
-      <ion-list>
-        <ion-item routerLink="/students">
-          <ion-icon slot="start" name="people"></ion-icon>
-          <ion-label>Estudiantes</ion-label>
-          <ion-icon slot="end" name="chevron-forward"></ion-icon>
-        </ion-item>
+    <!-- ── VISTA PROFESOR ─────────────────────────────────── -->
+    <ng-container *ngIf="isTeacher">
 
-        <ion-item routerLink="/courses">
-          <ion-icon slot="start" name="book"></ion-icon>
-          <ion-label>Cursos</ion-label>
-          <ion-icon slot="end" name="chevron-forward"></ion-icon>
-        </ion-item>
+      <!-- Métricas generales -->
+      <ion-grid *ngIf="metrics">
+        <ion-row>
+          <ion-col size="6">
+            <ion-card color="primary">
+              <ion-card-content class="metric-card">
+                <div class="metric-value">{{ metrics.totalStudents }}</div>
+                <div class="metric-label">Estudiantes</div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card color="success">
+              <ion-card-content class="metric-card">
+                <div class="metric-value">{{ metrics.totalCourses }}</div>
+                <div class="metric-label">Cursos</div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card color="warning">
+              <ion-card-content class="metric-card">
+                <div class="metric-value">{{ metrics.totalEvaluations }}</div>
+                <div class="metric-label">Evaluaciones</div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="6">
+            <ion-card color="tertiary">
+              <ion-card-content class="metric-card">
+                <div class="metric-value">{{ metrics.averageScore | number:'1.1-1' }}</div>
+                <div class="metric-label">Promedio Gral.</div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
-        <ion-item routerLink="/evaluations">
-          <ion-icon slot="start" name="clipboard"></ion-icon>
-          <ion-label>Evaluaciones</ion-label>
-          <ion-icon slot="end" name="chevron-forward"></ion-icon>
+      <!-- Desempeño por curso -->
+      <ion-list-header>
+        <ion-label>Desempeño por Curso</ion-label>
+      </ion-list-header>
+      <ion-list *ngIf="performance.length; else noPerformance">
+        <ion-item *ngFor="let p of performance">
+          <ion-label>
+            <h2>{{ p.courseName }}</h2>
+            <p>{{ p.totalStudents }} estudiantes</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="p.averageScore >= 70 ? 'success' : 'danger'">
+            {{ p.averageScore | number:'1.1-1' }}
+          </ion-badge>
         </ion-item>
       </ion-list>
-    </div>
+      <ng-template #noPerformance>
+        <ion-item>
+          <ion-label color="medium">Sin datos de desempeño</ion-label>
+        </ion-item>
+      </ng-template>
 
-    <div class="placeholder-section">
-      <ion-card color="warning">
+    </ng-container>
+
+    <!-- ── VISTA ESTUDIANTE ───────────────────────────────── -->
+    <ng-container *ngIf="!isTeacher">
+
+      <!-- Resumen de notas -->
+      <ion-card>
         <ion-card-header>
-          <ion-card-title>⚠️ Sección en Desarrollo</ion-card-title>
+          <ion-card-title>Resumen Académico</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p>Las funcionalidades principales están siendo implementadas.</p>
-          <p>Próximamente:</p>
-          <ul>
-            <li>Estadísticas académicas</li>
-            <li>Gráficos de desempeño</li>
-            <li>Tareas pendientes</li>
-            <li>Notificaciones</li>
-          </ul>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6" class="ion-text-center">
+                <div class="metric-value">{{ myCourses.length }}</div>
+                <div class="metric-label">Cursos</div>
+              </ion-col>
+              <ion-col size="6" class="ion-text-center">
+                <div class="metric-value">{{ averageGrade }}%</div>
+                <div class="metric-label">Promedio</div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-card-content>
       </ion-card>
-    </div>
+
+      <!-- Últimas evaluaciones -->
+      <ion-list-header>
+        <ion-label>Últimas Evaluaciones</ion-label>
+      </ion-list-header>
+      <ion-list *ngIf="myEvaluations.length; else noEvals">
+        <ion-item *ngFor="let ev of myEvaluations | slice:0:5">
+          <ion-label>
+            <h2>{{ ev.description }}</h2>
+            <p>{{ ev.type | titlecase }} · {{ ev.date | date:'shortDate' }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="(ev.score / ev.maxScore) >= 0.7 ? 'success' : 'danger'">
+            {{ ev.score }}/{{ ev.maxScore }}
+          </ion-badge>
+        </ion-item>
+      </ion-list>
+      <ng-template #noEvals>
+        <ion-item>
+          <ion-label color="medium">Sin evaluaciones registradas</ion-label>
+        </ion-item>
+      </ng-template>
+
+    </ng-container>
+
   </div>
+
 </ion-content>
