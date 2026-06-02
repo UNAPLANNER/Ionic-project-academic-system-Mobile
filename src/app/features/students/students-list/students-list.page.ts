@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { StudentService } from '../../../core/services/student.service';
 import { Student } from '../../../core/models/student.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-students-list',
@@ -18,7 +20,10 @@ export class StudentsListPage {
 
   constructor(
     private studentService: StudentService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ionViewWillEnter() {
@@ -37,5 +42,23 @@ export class StudentsListPage {
     } finally {
       this.loading = false;
     }
+  }
+
+  async logout() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar sesión',
+      message: '¿Deseas cerrar sesión?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Salir',
+          handler: async () => {
+            await this.authService.logout();
+            this.router.navigate(['/auth/login']);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }
