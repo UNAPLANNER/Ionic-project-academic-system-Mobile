@@ -4,7 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
 
 /**
- * Guard que protege rutas que requieren autenticación
+ * Guard that protects routes that require authentication
  */
 export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const authService = inject(AuthService);
@@ -14,13 +14,13 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
     return true;
   }
 
-  // Redirigir al login si no está autenticado
+  // Redirect to login if not authenticated
   router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
   return false;
 };
 
 /**
- * Guard que verifica el rol del usuario
+ * Guard that verifies the user's role
  */
 export const roleGuard = (requiredRoles: ('student' | 'teacher' | 'admin')[]): CanActivateFn => {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
@@ -33,7 +33,7 @@ export const roleGuard = (requiredRoles: ('student' | 'teacher' | 'admin')[]): C
       return true;
     }
 
-    // Redirigir a dashboard si no tiene el rol requerido
+    // Redirect to dashboard if the user doesn't have the required role
     router.navigate(['/dashboard']);
     return false;
   };
