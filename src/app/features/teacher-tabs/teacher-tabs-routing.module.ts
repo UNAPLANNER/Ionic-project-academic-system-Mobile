@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TeacherTabsPage } from './teacher-tabs.page';
+import { roleGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -13,7 +14,8 @@ const routes: Routes = [
       },
       {
         path: 'students',
-        loadChildren: () => import('../students/students-module').then(m => m.StudentsModule)
+        loadChildren: () => import('../students/students-module').then(m => m.StudentsModule),
+        canActivate: [roleGuard(['teacher', 'admin'])]
       },
       {
         path: 'courses',

@@ -1,0 +1,224 @@
+// ── Wrapper general ───────────────────────────────────────────────
+.content-wrapper {
+  padding: 4px 0;
+}
+
+// ── Filtro de cursos ──────────────────────────────────────────────
+.course-filter {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.course-chip {
+  --background: #f5f3ff;
+  --color: #6b7280;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    color: #9ca3af;
+    margin-right: 4px;
+  }
+
+  &.chip-active {
+    --background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    --color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+
+    ion-icon {
+      color: #ffffff;
+    }
+  }
+}
+
+// ── Encabezado de sección ─────────────────────────────────────────
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e1b4b;
+
+  ion-icon {
+    font-size: 17px;
+    color: #4f46e5;
+  }
+}
+
+// ── Grid ──────────────────────────────────────────────────────────
+.students-grid {
+  padding: 0;
+
+  ion-col {
+    padding: 4px;
+  }
+}
+
+// ── Tarjeta de estudiante ─────────────────────────────────────────
+.student-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+  margin: 0;
+  height: 100%;
+  padding: 25px 10px;
+
+  ion-card-content {
+    padding: 12px;
+  }
+}
+
+// ── Fila principal: avatar izquierda + info derecha ───────────────
+.card-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+// ── Avatar ────────────────────────────────────────────────────────
+.student-avatar {
+  width: 59px;
+  height: 56px;
+  min-width: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 28px;
+    color: #fff;
+  }
+}
+
+// ── Columna derecha ───────────────────────────────────────────────
+.student-right {
+  flex: 1;
+  min-width: 0;
+
+  .student-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin: 4px 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .student-email {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ── Badges arriba a la derecha ────────────────────────────────────
+.student-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 10px;
+  }
+
+  &.career {
+    background: #ede9fe;
+    color: #4f46e5;
+  }
+
+  &.semester {
+    background: #f5f3ff;
+    color: #7c3aed;
+    border: 1px solid #ddd6fe;
+  }
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────
+.skeleton-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.08);
+  margin: 0;
+
+  ion-card-content {
+    padding: 14px 12px;
+  }
+
+  .skeleton-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+}
+
+// ── Botón editar (icono, esquina derecha) ─────────────────────────
+.edit-btn {
+  --color: #7c3aed;
+  --padding-start: 6px;
+  --padding-end: 6px;
+  align-self: flex-start;
+  margin: 0;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+// ── Estado vacío ──────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 12px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 56px;
+    color: #ddd6fe;
+  }
+
+  p {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+  }
+}
