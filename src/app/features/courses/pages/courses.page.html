@@ -1,0 +1,114 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>{{ isTeacher ? 'Cursos' : 'Mis Cursos' }}</ion-title>
+    <ion-buttons slot="end" *ngIf="isTeacher">
+      <ion-button (click)="openCreate()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadCourses(); $event.target.complete()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Formulario crear/editar (solo profesor) -->
+  <ion-card *ngIf="showForm && isTeacher">
+    <ion-card-header>
+      <ion-card-title>{{ editingId ? 'Editar' : 'Nuevo' }} Curso</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="courseForm" (ngSubmit)="saveCourse()">
+        <ion-item>
+          <ion-label position="floating">Nombre del curso</ion-label>
+          <ion-input formControlName="name" type="text"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Código</ion-label>
+          <ion-input formControlName="code" type="text"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Créditos</ion-label>
+          <ion-input formControlName="credits" type="number" min="1"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Horario</ion-label>
+          <ion-input formControlName="schedule" type="text" placeholder="Ej: Lun-Mie 8:00-10:00"></ion-input>
+        </ion-item>
+
+        <ion-row class="ion-margin-top">
+          <ion-col>
+            <ion-button expand="block" type="submit" [disabled]="loading || courseForm.invalid">
+              {{ editingId ? 'Actualizar' : 'Guardar' }}
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button expand="block" fill="outline" color="medium" (click)="cancelForm()">
+              Cancelar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Loading -->
+  <div *ngIf="loading && !showForm" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+
+  <!-- Lista de cursos -->
+  <ion-list *ngIf="!loading || showForm">
+
+    <!-- Vista profesor: con swipe edit/delete -->
+    <ng-container *ngIf="isTeacher">
+      <ion-item-sliding *ngFor="let course of courses">
+        <ion-item>
+          <ion-icon name="book-outline" slot="start" color="success"></ion-icon>
+          <ion-label>
+            <h2>{{ course.name }}</h2>
+            <p>Código: {{ course.code }} · {{ course.credits }} créditos</p>
+            <p>{{ course.schedule }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="openEdit(course)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="confirmDelete(course)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ng-container>
+
+    <!-- Vista estudiante: solo lectura -->
+    <ng-container *ngIf="!isTeacher">
+      <ion-item *ngFor="let course of courses">
+        <ion-icon name="book-outline" slot="start" color="success"></ion-icon>
+        <ion-label>
+          <h2>{{ course.name }}</h2>
+          <p>Código: {{ course.code }} · {{ course.credits }} créditos</p>
+          <p>{{ course.schedule }}</p>
+        </ion-label>
+      </ion-item>
+    </ng-container>
+
+    <ion-item *ngIf="!loading && courses.length === 0">
+      <ion-label color="medium" class="ion-text-center">No hay cursos disponibles</ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isTeacher">
+  <ion-fab-button color="success" (click)="openCreate()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

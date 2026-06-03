@@ -1,0 +1,146 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>{{ isTeacher ? 'Panel del Profesor' : 'Mi Panel' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading && currentUser" class="content-wrapper">
+
+    <!-- Bienvenida -->
+    <div class="welcome-card">
+      <div class="welcome-avatar">
+        <ion-icon [name]="isTeacher ? 'school' : 'person'"></ion-icon>
+      </div>
+      <div class="welcome-text">
+        <p class="welcome-role">{{ isTeacher ? 'Profesor' : 'Estudiante' }}</p>
+        <h2 class="welcome-name">Hola, {{ currentUser.name }}</h2>
+        <p class="welcome-email">{{ currentUser.email }}</p>
+      </div>
+    </div>
+
+    <!-- ── VISTA PROFESOR ───────────────────────────────── -->
+    <ng-container *ngIf="isTeacher">
+
+      <!-- Métricas -->
+      <ion-grid *ngIf="metrics" class="metrics-grid">
+        <ion-row>
+          <ion-col size="6">
+            <div class="metric-tile tile-indigo">
+              <ion-icon name="people"></ion-icon>
+              <div class="metric-value">{{ metrics.totalStudents }}</div>
+              <div class="metric-label">Estudiantes</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-violet">
+              <ion-icon name="book"></ion-icon>
+              <div class="metric-value">{{ metrics.totalCourses }}</div>
+              <div class="metric-label">Cursos</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-purple">
+              <ion-icon name="clipboard"></ion-icon>
+              <div class="metric-value">{{ metrics.totalEvaluations }}</div>
+              <div class="metric-label">Evaluaciones</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-fuchsia">
+              <ion-icon name="star"></ion-icon>
+              <div class="metric-value">{{ metrics.averageScore | number:'1.1-1' }}</div>
+              <div class="metric-label">Promedio</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Desempeño por curso -->
+      <div class="section-header">
+        <ion-icon name="bar-chart-outline" color="primary"></ion-icon>
+        <span>Desempeño por Curso</span>
+      </div>
+      <ion-card>
+        <ion-list lines="full" *ngIf="performance.length; else noPerformance">
+          <ion-item *ngFor="let p of performance">
+            <ion-label>
+              <h2>{{ p.courseName }}</h2>
+              <p>{{ p.totalStudents }} estudiantes</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="p.averageScore >= 70 ? 'success' : 'danger'">
+              {{ p.averageScore | number:'1.1-1' }}
+            </ion-badge>
+          </ion-item>
+        </ion-list>
+        <ng-template #noPerformance>
+          <ion-item><ion-label color="medium">Sin datos aún</ion-label></ion-item>
+        </ng-template>
+      </ion-card>
+
+    </ng-container>
+
+    <!-- ── VISTA ESTUDIANTE ─────────────────────────────── -->
+    <ng-container *ngIf="!isTeacher">
+
+      <!-- Resumen -->
+      <ion-grid class="metrics-grid">
+        <ion-row>
+          <ion-col size="6">
+            <div class="metric-tile tile-indigo">
+              <ion-icon name="book"></ion-icon>
+              <div class="metric-value">{{ myCourses.length }}</div>
+              <div class="metric-label">Cursos</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-violet">
+              <ion-icon name="star"></ion-icon>
+              <div class="metric-value">{{ averageGrade }}%</div>
+              <div class="metric-label">Promedio</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Últimas evaluaciones -->
+      <div class="section-header">
+        <ion-icon name="school-outline" color="primary"></ion-icon>
+        <span>Últimas Evaluaciones</span>
+      </div>
+      <ion-card>
+        <ion-list lines="full" *ngIf="myEvaluations.length; else noEvals">
+          <ion-item *ngFor="let ev of myEvaluations | slice:0:5">
+            <ion-label>
+              <h2>{{ ev.description }}</h2>
+              <p>{{ ev.type | titlecase }} · {{ ev.date | date:'shortDate' }}</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="(ev.score / ev.maxScore) >= 0.7 ? 'success' : 'danger'">
+              {{ ev.score }}/{{ ev.maxScore }}
+            </ion-badge>
+          </ion-item>
+        </ion-list>
+        <ng-template #noEvals>
+          <ion-item><ion-label color="medium">Sin evaluaciones aún</ion-label></ion-item>
+        </ng-template>
+      </ion-card>
+
+    </ng-container>
+
+  </div>
+
+</ion-content>
