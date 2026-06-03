@@ -15,6 +15,27 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <!-- Chips de filtro por curso -->
+  <div class="course-filter">
+    <ion-chip
+      class="course-chip"
+      [class.chip-active]="selectedCourseId === null"
+      (click)="selectCourse(null)">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>Todos</ion-label>
+    </ion-chip>
+
+    @for (course of courses; track course.id) {
+      <ion-chip
+        class="course-chip"
+        [class.chip-active]="selectedCourseId === course.id"
+        (click)="selectCourse(course.id)">
+        <ion-icon name="book-outline"></ion-icon>
+        <ion-label>{{ course.name }}</ion-label>
+      </ion-chip>
+    }
+  </div>
+
   <div class="content-wrapper">
 
     <!-- Skeleton mientras carga -->
@@ -73,6 +94,14 @@
                       <h3 class="student-name">{{ student.name }}</h3>
                       <p class="student-email">{{ student.email }}</p>
                     </div>
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      class="edit-btn"
+                      (click)="goToEdit(student)">
+                      <ion-icon name="create-outline" slot="start"></ion-icon>
+                      Editar
+                    </ion-button>
                   </div>
                 </ion-card-content>
               </ion-card>
@@ -85,7 +114,19 @@
       @if (students.length === 0) {
         <div class="empty-state">
           <ion-icon name="people-outline"></ion-icon>
-          <p>No hay estudiantes registrados aún</p>
+          <p>
+            @if (selectedCourseId) {
+              No hay estudiantes en este curso
+            } @else {
+              No hay estudiantes registrados aún
+            }
+          </p>
+          @if (!selectedCourseId) {
+            <ion-button (click)="goToCreate()" fill="outline" color="primary">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Agregar estudiante
+            </ion-button>
+          }
         </div>
       }
     }
@@ -93,3 +134,10 @@
   </div>
 
 </ion-content>
+
+<!-- FAB para crear nuevo estudiante -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="primary" (click)="goToCreate()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
