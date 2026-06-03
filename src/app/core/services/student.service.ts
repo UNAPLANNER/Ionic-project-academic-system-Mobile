@@ -9,4 +9,20 @@ export class StudentService {
   getAll(): Promise<Student[]> {
     return this.api.getStudents();
   }
+
+  getById(id: string): Promise<Student> {
+    return this.api.getStudent(id);
+  }
+
+  getByCourse(courseId: string): Promise<Student[]> {
+    return this.api.getStudentsByCourse(courseId);
+  }
+
+  create(data: Partial<Student>): Promise<Student> {
+    return this.api.createStudent(data);
+  }
+
+  update(id: string, data: Partial<Student>): Promise<Student> {
+    return this.api.updateStudent(id, data);
+  }
 }
