@@ -83,11 +83,17 @@ export class ApiService {
   }
 
   async createCourse(data: Partial<Course>): Promise<Course> {
-    return firstValueFrom(this.http.post<Course>(`${this.api}/courses`, data, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.post<{ course: Course } | Course>(`${this.api}/courses`, data, await this.headers())
+    );
+    return 'course' in res ? res.course : res;
   }
 
   async updateCourse(id: string, data: Partial<Course>): Promise<Course> {
-    return firstValueFrom(this.http.put<Course>(`${this.api}/courses/${id}`, data, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.put<{ course: Course } | Course>(`${this.api}/courses/${id}`, data, await this.headers())
+    );
+    return 'course' in res ? res.course : res;
   }
 
   async deleteCourse(id: string): Promise<void> {

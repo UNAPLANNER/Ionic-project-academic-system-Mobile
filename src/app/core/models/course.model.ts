@@ -5,5 +5,6 @@ export interface Course {
   teacherId: string;
   credits: number;
   schedule: string;
-  students: string[];
+  students?: string[];
+  totalStudents?: number;
 }
