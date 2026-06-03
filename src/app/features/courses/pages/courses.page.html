@@ -50,13 +50,18 @@
           <div class="course-card__icon">
             <ion-icon [name]="getCourseIcon(i)" aria-hidden="true"></ion-icon>
           </div>
-          <div>
+          <div class="course-card__main">
             <h2>{{ course.name }}</h2>
             <p>Codigo: {{ course.code }}</p>
           </div>
-          <button *ngIf="isTeacher" class="edit-chip" type="button" (click)="openEdit(course, $event)">
-            Editar
-          </button>
+          <div *ngIf="isTeacher" class="course-actions">
+            <button class="edit-chip" type="button" (click)="openEdit(course, $event)">
+              Editar
+            </button>
+            <button class="delete-chip" type="button" (click)="confirmDelete(course, $event)">
+              Eliminar
+            </button>
+          </div>
         </div>
 
         <div class="course-card__details">

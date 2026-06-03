@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { Course } from '../../../core/models/course.model';
@@ -50,6 +50,7 @@ export class CoursesPage implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
+    private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private fb: FormBuilder
   ) {}
@@ -128,6 +129,40 @@ export class CoursesPage implements OnInit {
 
     this.formMode = 'edit';
     this.buildForm(this.selectedCourse);
+  }
+
+  async confirmDelete(course: Course, event?: Event) {
+    event?.stopPropagation();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Eliminar curso',
+      message: `Deseas eliminar "${course.name}"?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => this.deleteCourse(course)
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async deleteCourse(course: Course) {
+    this.loading = true;
+    try {
+      await this.apiService.deleteCourse(course.id);
+      this.showToast('Curso eliminado correctamente', 'success');
+      if (this.selectedCourse?.id === course.id) this.selectedCourse = null;
+      await this.loadCourses();
+    } catch (err: any) {
+      const msg = err?.error?.error ?? err?.message ?? 'Error al eliminar curso';
+      this.showToast(msg, 'danger');
+    } finally {
+      this.loading = false;
+    }
   }
 
   cancelForm() {

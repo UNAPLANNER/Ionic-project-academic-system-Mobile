@@ -43,7 +43,7 @@
   background: var(--card-accent);
 }
 
-.course-card__top > div:last-of-type { flex: 1; }
+.course-card__main { flex: 1; }
 
 .course-card__icon {
   display: grid;
@@ -54,15 +54,23 @@
   background: rgba(255, 255, 255, 0.14);
 }
 
-.edit-chip {
+.course-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.edit-chip,
+.delete-chip {
   align-self: flex-start;
   padding: 6px 12px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
   color: #fff;
   font-weight: 800;
 }
+
+.edit-chip { background: rgba(255, 255, 255, 0.2); }
+.delete-chip { background: #dc2626; }
 
 .course-card__top h2,
 .course-card__top p,
@@ -108,8 +116,6 @@
   padding: 18px;
 }
 
-.form-header { margin-bottom: 18px; }
-
 .field-item {
   margin: 6px 0 10px;
   --background: transparent;
@@ -138,7 +144,6 @@
 }
 
 .time-grid { grid-template-columns: 1fr 1fr; }
-.field-error { outline: 1px solid #dc2626; }
 .error-msg { color: #dc2626; }
 .save-btn { margin-top: 18px; }
 
