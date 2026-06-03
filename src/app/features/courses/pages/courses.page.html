@@ -2,7 +2,7 @@
   <ion-toolbar color="primary">
     <ion-title>{{ isTeacher ? 'Cursos' : 'Mis Cursos' }}</ion-title>
     <ion-buttons slot="end" *ngIf="isTeacher">
-      <ion-button (click)="openCreate()">
+      <ion-button (click)="openCreate()" aria-label="Crear curso">
         <ion-icon name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -10,101 +10,113 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <ion-refresher slot="fixed" (ionRefresh)="loadCourses(); $event.target.complete()">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!-- Formulario crear/editar (solo profesor) -->
-  <ion-card *ngIf="showForm && isTeacher">
-    <ion-card-header>
-      <ion-card-title>{{ editingId ? 'Editar' : 'Nuevo' }} Curso</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <form [formGroup]="courseForm" (ngSubmit)="saveCourse()">
-        <ion-item>
-          <ion-label position="floating">Nombre del curso</ion-label>
-          <ion-input formControlName="name" type="text"></ion-input>
-        </ion-item>
+  <section class="courses-shell">
+    <div class="course-search">
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        placeholder="Buscar curso..."
+        debounce="200"
+        show-clear-button="focus"
+      ></ion-searchbar>
+      <ion-button fill="clear" size="small" aria-label="Filtrar cursos">
+        <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+      </ion-button>
+    </div>
 
-        <ion-item>
-          <ion-label position="floating">Código</ion-label>
-          <ion-input formControlName="code" type="text"></ion-input>
-        </ion-item>
+    <ion-card *ngIf="showForm && isTeacher" class="course-form-card">
+      <ion-card-header>
+        <ion-card-title>{{ editingId ? 'Editar' : 'Nuevo' }} Curso</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="courseForm" (ngSubmit)="saveCourse()">
+          <ion-item>
+            <ion-label position="floating">Nombre del curso</ion-label>
+            <ion-input formControlName="name" type="text"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Créditos</ion-label>
-          <ion-input formControlName="credits" type="number" min="1"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-label position="floating">Código</ion-label>
+            <ion-input formControlName="code" type="text"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Horario</ion-label>
-          <ion-input formControlName="schedule" type="text" placeholder="Ej: Lun-Mie 8:00-10:00"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-label position="floating">Créditos</ion-label>
+            <ion-input formControlName="credits" type="number" min="1"></ion-input>
+          </ion-item>
 
-        <ion-row class="ion-margin-top">
-          <ion-col>
-            <ion-button expand="block" type="submit" [disabled]="loading || courseForm.invalid">
-              {{ editingId ? 'Actualizar' : 'Guardar' }}
-            </ion-button>
-          </ion-col>
-          <ion-col>
-            <ion-button expand="block" fill="outline" color="medium" (click)="cancelForm()">
-              Cancelar
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </form>
-    </ion-card-content>
-  </ion-card>
+          <ion-item>
+            <ion-label position="floating">Horario</ion-label>
+            <ion-input formControlName="schedule" type="text" placeholder="Ej: Lun-Mie 8:00-10:00"></ion-input>
+          </ion-item>
 
-  <!-- Loading -->
-  <div *ngIf="loading && !showForm" class="ion-text-center ion-padding">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-  </div>
+          <ion-row class="ion-margin-top">
+            <ion-col>
+              <ion-button expand="block" type="submit" [disabled]="loading || courseForm.invalid">
+                {{ editingId ? 'Actualizar' : 'Guardar' }}
+              </ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button expand="block" fill="outline" color="medium" type="button" (click)="cancelForm()">
+                Cancelar
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </form>
+      </ion-card-content>
+    </ion-card>
 
-  <!-- Lista de cursos -->
-  <ion-list *ngIf="!loading || showForm">
+    <div *ngIf="loading && !showForm" class="courses-loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando cursos...</p>
+    </div>
 
-    <!-- Vista profesor: con swipe edit/delete -->
-    <ng-container *ngIf="isTeacher">
-      <ion-item-sliding *ngFor="let course of courses">
-        <ion-item>
-          <ion-icon name="book-outline" slot="start" color="success"></ion-icon>
-          <ion-label>
+    <div *ngIf="!loading && courses.length === 0" class="courses-empty">
+      <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+      <p>No hay cursos disponibles</p>
+    </div>
+
+    <div *ngIf="!loading && courses.length > 0 && filteredCourses.length === 0" class="courses-empty">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <p>No se encontraron cursos</p>
+    </div>
+
+    <section *ngIf="!loading || showForm" class="course-grid">
+      <article
+        *ngFor="let course of filteredCourses; let i = index"
+        class="course-card"
+        [ngClass]="getCardClass(i)"
+      >
+        <div class="course-card__top">
+          <div class="course-card__icon">
+            <ion-icon [name]="getCourseIcon(i)" aria-hidden="true"></ion-icon>
+          </div>
+          <div>
             <h2>{{ course.name }}</h2>
-            <p>Código: {{ course.code }} · {{ course.credits }} créditos</p>
-            <p>{{ course.schedule }}</p>
-          </ion-label>
-        </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="primary" (click)="openEdit(course)">
-            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="confirmDelete(course)">
-            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ng-container>
+            <p>Código: {{ course.code }}</p>
+          </div>
+        </div>
 
-    <!-- Vista estudiante: solo lectura -->
-    <ng-container *ngIf="!isTeacher">
-      <ion-item *ngFor="let course of courses">
-        <ion-icon name="book-outline" slot="start" color="success"></ion-icon>
-        <ion-label>
-          <h2>{{ course.name }}</h2>
-          <p>Código: {{ course.code }} · {{ course.credits }} créditos</p>
-          <p>{{ course.schedule }}</p>
-        </ion-label>
-      </ion-item>
-    </ng-container>
-
-    <ion-item *ngIf="!loading && courses.length === 0">
-      <ion-label color="medium" class="ion-text-center">No hay cursos disponibles</ion-label>
-    </ion-item>
-  </ion-list>
-
+        <div class="course-card__details">
+          <div>
+            <span>Créditos</span>
+            <strong>{{ course.credits }}</strong>
+          </div>
+          <div>
+            <span>Estudiantes</span>
+            <strong>{{ getEnrolledCount(course) }}</strong>
+          </div>
+          <div class="full">
+            <span>Horario</span>
+            <strong>{{ course.schedule }}</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+  </section>
 </ion-content>
 
 <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isTeacher">
