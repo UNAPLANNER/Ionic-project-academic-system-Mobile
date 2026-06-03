@@ -63,7 +63,19 @@ export class ApiService {
 
   // ── Courses ─────────────────────────────────────────────────────
   async getCourses(): Promise<Course[]> {
-    return firstValueFrom(this.http.get<Course[]>(`${this.api}/courses`, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.get<{ courses: Course[] } | Course[]>(`${this.api}/courses`, await this.headers())
+    );
+    return Array.isArray(res) ? res : res.courses ?? [];
+  }
+
+  async getStudentsByCourse(courseId: string): Promise<Student[]> {
+    const res = await firstValueFrom(
+      this.http.get<{ students: Student[] } | Student[]>(
+        `${this.api}/courses/${courseId}/students`, await this.headers()
+      )
+    );
+    return Array.isArray(res) ? res : res.students ?? [];
   }
 
   async getCourse(id: string): Promise<Course> {
