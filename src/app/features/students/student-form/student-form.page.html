@@ -1,0 +1,102 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar' : 'Nuevo' }} Estudiante</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  @if (loadingStudent) {
+    <div class="ion-text-center ion-padding-top" style="padding-top: 48px">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p style="color: #6b7280; margin-top: 12px; font-size: 14px">Cargando datos del estudiante...</p>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()" [class.ion-hide]="loadingStudent">
+
+    <!-- Nombre -->
+    <div class="field-group">
+      <label class="field-label">Nombre completo</label>
+      <ion-item class="field-item" [class.field-error]="hasError('name', 'required') || hasError('name', 'minlength')">
+        <ion-icon name="person-outline" slot="start" class="field-icon"></ion-icon>
+        <ion-input formControlName="name" type="text" placeholder="Ej: María Rodríguez"></ion-input>
+      </ion-item>
+      @if (hasError('name', 'required')) {
+        <p class="error-msg">El nombre es requerido</p>
+      }
+      @if (hasError('name', 'minlength')) {
+        <p class="error-msg">Mínimo 3 caracteres</p>
+      }
+    </div>
+
+    <!-- Email -->
+    <div class="field-group">
+      <label class="field-label">Correo electrónico</label>
+      <ion-item class="field-item" [class.field-error]="hasError('email', 'required') || hasError('email', 'email')">
+        <ion-icon name="mail-outline" slot="start" class="field-icon"></ion-icon>
+        <ion-input formControlName="email" type="email" placeholder="Ej: maria@est.una.ac.cr"></ion-input>
+      </ion-item>
+      @if (hasError('email', 'required')) {
+        <p class="error-msg">El correo es requerido</p>
+      }
+      @if (hasError('email', 'email')) {
+        <p class="error-msg">Ingresa un correo válido</p>
+      }
+    </div>
+
+    <!-- Carrera -->
+    <div class="field-group">
+      <label class="field-label">Carrera</label>
+      <ion-item class="field-item" [class.field-error]="hasError('career', 'required')">
+        <ion-icon name="school-outline" slot="start" class="field-icon"></ion-icon>
+        <ion-input formControlName="career" type="text" placeholder="Ej: Ingeniería en Sistemas"></ion-input>
+      </ion-item>
+      @if (hasError('career', 'required')) {
+        <p class="error-msg">La carrera es requerida</p>
+      }
+    </div>
+
+    <!-- Semestre -->
+    <div class="field-group">
+      <label class="field-label">Semestre</label>
+      <ion-item class="field-item" [class.field-error]="hasError('semester', 'required') || hasError('semester', 'min') || hasError('semester', 'max')">
+        <ion-icon name="layers-outline" slot="start" class="field-icon"></ion-icon>
+        <ion-input formControlName="semester" type="number" placeholder="1 - 12"></ion-input>
+      </ion-item>
+      @if (hasError('semester', 'required')) {
+        <p class="error-msg">El semestre es requerido</p>
+      }
+      @if (hasError('semester', 'min') || hasError('semester', 'max')) {
+        <p class="error-msg">El semestre debe estar entre 1 y 12</p>
+      }
+    </div>
+
+    <!-- Botón guardar -->
+    <ion-button
+      expand="block"
+      type="submit"
+      class="save-btn"
+      [disabled]="saving">
+      @if (saving) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+      }
+      {{ isEdit ? 'Actualizar' : 'Crear' }} Estudiante
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="medium"
+      class="cancel-btn"
+      (click)="cancel()">
+      Cancelar
+    </ion-button>
+
+  </form>
+</ion-content>
