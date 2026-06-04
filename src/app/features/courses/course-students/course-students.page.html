@@ -5,7 +5,17 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Estudiantes</ion-title>
+    <ion-title>Asignacion de estudiantes</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="!loading" class="search-toolbar">
+    <ion-searchbar
+      class="student-search"
+      [(ngModel)]="searchTerm"
+      placeholder="Buscar estudiante..."
+      debounce="200"
+      show-clear-button="focus"
+    ></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -23,6 +33,33 @@
     </div>
 
     <ng-container *ngIf="!loading">
+      <section class="assign-section">
+        <h3>Asignar estudiantes</h3>
+
+        <div *ngIf="students.length === 0" class="empty-box">
+          No hay estudiantes disponibles
+        </div>
+
+        <div *ngIf="students.length > 0 && filteredStudents.length === 0" class="empty-box">
+          No se encontraron estudiantes
+        </div>
+
+        <ion-list *ngIf="filteredStudents.length > 0">
+          <ion-item *ngFor="let student of filteredStudents">
+            <ion-checkbox
+              slot="start"
+              [checked]="isSelected(student.id)"
+              (ionChange)="toggleStudent(student.id, $event.detail.checked)"
+            ></ion-checkbox>
+            <ion-label>
+              <h2>{{ student.name }}</h2>
+              <p>{{ student.email }}</p>
+              <p>{{ student.career || 'Sin carrera' }} - Semestre {{ student.semester || 'N/A' }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </section>
+
       <section class="enrolled-section">
         <h3>Matriculados</h3>
 
@@ -39,29 +76,6 @@
             <ion-button fill="clear" color="danger" slot="end" (click)="removeStudent(student.id)">
               <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
             </ion-button>
-          </ion-item>
-        </ion-list>
-      </section>
-
-      <section class="assign-section">
-        <h3>Asignar estudiantes</h3>
-
-        <div *ngIf="students.length === 0" class="empty-box">
-          No hay estudiantes disponibles
-        </div>
-
-        <ion-list *ngIf="students.length > 0">
-          <ion-item *ngFor="let student of students">
-            <ion-checkbox
-              slot="start"
-              [checked]="isSelected(student.id)"
-              (ionChange)="toggleStudent(student.id, $event.detail.checked)"
-            ></ion-checkbox>
-            <ion-label>
-              <h2>{{ student.name }}</h2>
-              <p>{{ student.email }}</p>
-              <p>{{ student.career || 'Sin carrera' }} - Semestre {{ student.semester || 'N/A' }}</p>
-            </ion-label>
           </ion-item>
         </ion-list>
       </section>

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ApiService } from '../../../core/services/api.service';
@@ -11,18 +12,33 @@ import { Student } from '../../../core/models/student.model';
   templateUrl: './course-students.page.html',
   styleUrls: ['./course-students.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class CourseStudentsPage implements OnInit {
   courseId = '';
   course: Course | null = null;
   students: Student[] = [];
+  searchTerm = '';
   selectedIds = new Set<string>();
   loading = false;
   saving = false;
 
   get enrolledStudents(): Student[] {
     return this.students.filter(student => this.selectedIds.has(student.id));
+  }
+
+  get filteredStudents(): Student[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) return this.students;
+
+    return this.students.filter(student =>
+      [
+        student.name,
+        student.email,
+        student.career ?? '',
+        student.semester?.toString() ?? ''
+      ].some(value => value.toLowerCase().includes(term))
+    );
   }
 
   constructor(

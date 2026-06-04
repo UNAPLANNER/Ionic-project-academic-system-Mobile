@@ -24,6 +24,18 @@
   color: #166534;
 }
 
+.search-toolbar {
+  --background: #fff;
+  --border-width: 0;
+}
+
+.student-search {
+  padding: 8px 14px 10px;
+  --background: #f0f4f8;
+  --border-radius: 8px;
+  --box-shadow: none;
+}
+
 .state-block,
 .empty-box {
   padding: 18px;

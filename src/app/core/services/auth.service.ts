@@ -64,9 +64,20 @@ export class AuthService {
     }
   }
 
-  // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
+  // Returns the Firebase ID token that the backend verifies with Firebase Admin.
   async getIdToken(): Promise<string | null> {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const currentUser = this.firebaseAuth.currentUser ?? await this.waitForFirebaseUser();
+    return currentUser ? currentUser.getIdToken() : null;
+  }
+
+  private waitForFirebaseUser(): Promise<FirebaseUser | null> {
+    return new Promise(resolve => {
+      let unsubscribe = () => {};
+      unsubscribe = onAuthStateChanged(this.firebaseAuth, user => {
+        unsubscribe();
+        resolve(user);
+      });
+    });
   }
 
   private saveSession(user: User, token: string) {
