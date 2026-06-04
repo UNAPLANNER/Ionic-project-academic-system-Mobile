@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { Course } from '../../../core/models/course.model';
@@ -144,6 +144,127 @@ export class CoursesPage implements OnInit {
 
     this.formMode = 'edit';
     this.buildForm(this.selectedCourse);
+  }
+
+  async confirmDelete(course: Course, event?: Event) {
+    event?.stopPropagation();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Eliminar curso',
+      message: `Deseas eliminar "${course.name}"?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => this.deleteCourse(course)
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async deleteCourse(course: Course) {
+    this.loading = true;
+    try {
+      await this.apiService.deleteCourse(course.id);
+      this.showToast('Curso eliminado correctamente', 'success');
+      if (this.selectedCourse?.id === course.id) this.selectedCourse = null;
+      await this.loadCourses();
+    } catch (err: any) {
+      const msg = err?.error?.error ?? err?.message ?? 'Error al eliminar curso';
+      this.showToast(msg, 'danger');
+    } finally {
+      this.loading = false;
+    }
+
+    this.formMode = 'edit';
+    this.buildForm(this.selectedCourse);
+  }
+
+  cancelForm() {
+    this.formMode = 'list';
+    this.buildForm();
+  }
+
+  isDaySelected(day: string): boolean {
+    return this.scheduleEntries.controls.some(control => control.get('day')?.value === day);
+  }
+
+  toggleDay(day: string) {
+    const index = this.scheduleEntries.controls.findIndex(control => control.get('day')?.value === day);
+
+    if (index >= 0) {
+      this.scheduleEntries.removeAt(index);
+      return;
+    }
+
+    this.scheduleEntries.push(this.createScheduleEntry({ day, startTime: '00:00', endTime: '00:00' }));
+  }
+
+  async saveCourse() {
+    if (this.courseForm.invalid || this.scheduleEntries.length === 0) {
+      this.courseForm.markAllAsTouched();
+      if (this.scheduleEntries.length === 0) this.showToast('Selecciona al menos un dia', 'danger');
+      return;
+    }
+
+    const raw = this.courseForm.value;
+    const schedule = raw.scheduleEntries
+      .map((entry: ScheduleEntry) => `${entry.day} ${entry.startTime}-${entry.endTime}`)
+      .join('; ');
+
+    const payload = {
+      name: raw.name,
+      code: raw.code,
+      credits: Number(raw.credits),
+      schedule
+    };
+
+    this.saving = true;
+    try {
+      if (this.formMode === 'edit' && this.selectedCourse) {
+        const updated = await this.apiService.updateCourse(this.selectedCourse.id, payload);
+        this.selectedCourse = updated;
+        this.showToast('Curso actualizado correctamente', 'success');
+      } else {
+        await this.apiService.createCourse(payload);
+        this.showToast('Curso creado correctamente', 'success');
+      }
+
+      this.formMode = 'list';
+      await this.loadCourses();
+    } catch (err: any) {
+      const msg = err?.error?.error ?? err?.message ?? 'Error al guardar curso';
+      this.showToast(msg, 'danger');
+    } finally {
+      this.saving = false;
+    }
+  }
+
+  getCardClass(index: number): string {
+    const classes = ['navy', 'blue', 'green', 'teal'];
+    return classes[index % classes.length];
+  }
+
+  getCourseIcon(index: number): string {
+    const icons = ['server-outline', 'git-network-outline', 'language-outline', 'calculator-outline'];
+    return icons[index % icons.length];
+  }
+
+  getEnrolledCount(course: Course): number {
+    return course.totalStudents ?? course.students?.length ?? 0;
+  }
+
+  hasError(field: string, error: string): boolean {
+    const control = this.courseForm.get(field);
+    return !!(control?.hasError(error) && control.touched);
+  }
+
+  hasScheduleError(index: number, field: string): boolean {
+    const control = this.scheduleEntries.at(index).get(field);
+    return !!(control?.hasError('required') && control.touched);
   }
 
   cancelForm() {

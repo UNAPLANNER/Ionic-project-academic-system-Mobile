@@ -38,7 +38,7 @@ export class AuthService {
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
       );
       await signInWithCustomToken(this.firebaseAuth, response.token);
-      this.saveSession(response.user);
+      this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -54,7 +54,7 @@ export class AuthService {
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
       );
       await signInWithCustomToken(this.firebaseAuth, response.token);
-      this.saveSession(response.user);
+      this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -66,13 +66,12 @@ export class AuthService {
 
   // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
   async getIdToken(): Promise<string | null> {
-    const user = this.firebaseAuth.currentUser;
-    if (!user) return null;
-    return user.getIdToken();
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  private saveSession(user: User) {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  private saveSession(user: User, token: string) {
+    localStorage.setItem(this.USER_KEY,  JSON.stringify(user));
+    localStorage.setItem(this.TOKEN_KEY, token);
     this.currentUserSubject.next(user);
   }
 
