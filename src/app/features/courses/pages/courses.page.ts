@@ -15,6 +15,7 @@ import { Course } from '../../../core/models/course.model';
 })
 export class CoursesPage implements OnInit {
   courses: Course[] = [];
+  searchTerm = '';
   loading = false;
   isTeacher = false;
 
@@ -37,6 +38,17 @@ export class CoursesPage implements OnInit {
     this.loadCourses();
   }
 
+  get filteredCourses(): Course[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    if (!term) return this.courses;
+
+    return this.courses.filter(course =>
+      [course.name, course.code, course.schedule]
+        .some(value => value?.toLowerCase().includes(term))
+    );
+  }
+
   private buildForm(c?: Course) {
     this.courseForm = this.fb.group({
       name: [c?.name || '', [Validators.required, Validators.minLength(3)]],
@@ -55,6 +67,22 @@ export class CoursesPage implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  getCardClass(index: number): string {
+    const classes = ['navy', 'blue', 'green', 'teal'];
+
+    return classes[index % classes.length];
+  }
+
+  getCourseIcon(index: number): string {
+    const icons = ['server-outline', 'git-network-outline', 'language-outline', 'calculator-outline'];
+
+    return icons[index % icons.length];
+  }
+
+  getEnrolledCount(course: Course): number {
+    return course.students?.length ?? 0;
   }
 
   openCreate() {

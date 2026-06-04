@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth, signInWithCustomToken, signOut } from '@angular/fire/auth';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from '../../../environments/environment';
@@ -65,7 +66,23 @@ export class AuthService {
 
   // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
   async getIdToken(): Promise<string | null> {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const user = this.firebaseAuth.currentUser ?? await this.waitForFirebaseUser();
+
+    return user?.getIdToken() ?? null;
+  }
+
+  private waitForFirebaseUser(): Promise<FirebaseUser | null> {
+    return new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(this.firebaseAuth, user => {
+        unsubscribe();
+        resolve(user);
+      });
+
+      setTimeout(() => {
+        unsubscribe();
+        resolve(null);
+      }, 2000);
+    });
   }
 
   private saveSession(user: User, token: string) {

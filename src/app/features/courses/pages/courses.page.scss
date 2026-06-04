@@ -1,18 +1,143 @@
-.placeholder-container {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.courses-shell {
+  min-height: 100%;
+  padding: 14px 12px 96px;
+  background: #f4f7fb;
 }
 
-ion-card {
-  ul {
-    padding-left: 20px;
-    margin: 15px 0 0 0;
+.course-search {
+  display: flex;
+  align-items: center;
+  max-width: 620px;
+  margin: 0 auto 18px;
+  border: 1px solid #d9e1ec;
+  border-radius: 8px;
+  background: #fff;
+}
 
-    li {
-      margin: 8px 0;
-      color: #333;
-    }
+.course-search ion-searchbar {
+  --background: transparent;
+  --box-shadow: none;
+  padding: 0;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.course-card {
+  --card-accent: #241d56;
+  overflow: hidden;
+  border-left: 4px solid var(--card-accent);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.1);
+}
+
+.course-card.blue {
+  --card-accent: #3d86f5;
+}
+
+.course-card.green {
+  --card-accent: #16743a;
+}
+
+.course-card.teal {
+  --card-accent: #15998f;
+}
+
+.course-card__top {
+  display: flex;
+  gap: 12px;
+  min-height: 84px;
+  padding: 18px;
+  color: #fff;
+  background: var(--card-accent);
+}
+
+.course-card__icon {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.course-card__top h2,
+.course-card__top p {
+  margin: 0;
+}
+
+.course-card__top h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.course-card__top p {
+  margin-top: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.course-card__details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 18px;
+}
+
+.course-card__details div {
+  min-width: 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f0f4f8;
+}
+
+.course-card__details .full {
+  grid-column: 1 / -1;
+}
+
+.course-card__details span,
+.course-card__details strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-card__details span {
+  color: #27364d;
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.course-card__details strong {
+  margin-top: 6px;
+  color: #0d174f;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.courses-loading,
+.courses-empty {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 28px 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.courses-empty ion-icon {
+  font-size: 2rem;
+}
+
+@media (max-width: 760px) {
+  .course-grid {
+    grid-template-columns: 1fr;
   }
 }
