@@ -7,6 +7,8 @@ import { ApiService } from '../../../core/services/api.service';
 import { Student } from '../../../core/models/student.model';
 import { Course } from '../../../core/models/course.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { ModalController } from '@ionic/angular';
+import { EvaluationFormPage } from '../../evaluations/evaluation-form/evaluation-form.page';
 
 @Component({
   selector: 'app-students-list',
@@ -29,7 +31,8 @@ export class StudentsListPage {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private modalCtrl: ModalController
   ) {}
 
   async ionViewWillEnter() {
@@ -96,5 +99,17 @@ export class StudentsListPage {
       ]
     });
     await alert.present();
+  }
+
+  async openEvaluation(student: Student) {
+
+  const modal = await this.modalCtrl.create({
+    component: EvaluationFormPage,
+    componentProps: {
+      student
+    }
+  });
+
+    await modal.present();
   }
 }

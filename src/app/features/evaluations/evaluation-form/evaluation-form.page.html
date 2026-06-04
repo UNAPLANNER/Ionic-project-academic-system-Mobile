@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Registrar Evaluación</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+
+    <!-- COURSE -->
+    <ion-item>
+      <ion-label>Curso</ion-label>
+      <ion-select
+        formControlName="courseId"
+        placeholder="Seleccione un curso">
+        <ion-select-option
+          *ngFor="let c of courses"
+          [value]="c.id">
+          {{ c.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- TYPE -->
+    <ion-item>
+      <ion-label>Tipo</ion-label>
+      <ion-select
+        formControlName="type"
+        placeholder="Seleccione un tipo">
+        <ion-select-option value="exam">
+          Examen
+        </ion-select-option>
+        <ion-select-option value="assignment">
+          Tarea
+        </ion-select-option>
+        <ion-select-option value="project">
+          Proyecto
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- SCORE -->
+    <ion-item>
+      <ion-label position="stacked">Nota</ion-label>
+      <ion-input
+        type="number"
+        formControlName="score"
+        placeholder="Ingrese la nota">
+      </ion-input>
+    </ion-item>
+
+    <!-- MAX SCORE -->
+    <ion-item>
+      <ion-label position="stacked">Nota Máxima</ion-label>
+      <ion-input
+        type="number"
+        formControlName="maxScore"
+        placeholder="Ingrese la nota máxima 100">
+      </ion-input>
+    </ion-item>
+
+    <!-- DATE -->
+    <ion-item>
+      <ion-label>Fecha</ion-label>
+      <ion-datetime
+        formControlName="date"
+        presentation="date">
+      </ion-datetime>
+    </ion-item>
+
+    <!-- DESCRIPTION -->
+    <ion-item>
+      <ion-label position="stacked">Descripción</ion-label>
+      <ion-input 
+        formControlName="description"
+        placeholder="Ej: Primer examen parcial">
+      </ion-input>
+    </ion-item>
+
+    <!-- BUTTON -->
+    <ion-button
+      expand="block"
+      type="submit"
+      color="primary">
+      Guardar Evaluación
+    </ion-button>
+
+  </form>
+
+</ion-content>
