@@ -63,7 +63,19 @@ export class ApiService {
 
   // ── Courses ─────────────────────────────────────────────────────
   async getCourses(): Promise<Course[]> {
-    return firstValueFrom(this.http.get<Course[]>(`${this.api}/courses`, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.get<{ courses: Course[] } | Course[]>(`${this.api}/courses`, await this.headers())
+    );
+    return Array.isArray(res) ? res : res.courses ?? [];
+  }
+
+  async getStudentsByCourse(courseId: string): Promise<Student[]> {
+    const res = await firstValueFrom(
+      this.http.get<{ students: Student[] } | Student[]>(
+        `${this.api}/courses/${courseId}/students`, await this.headers()
+      )
+    );
+    return Array.isArray(res) ? res : res.students ?? [];
   }
 
   async getCourse(id: string): Promise<Course> {
@@ -71,11 +83,17 @@ export class ApiService {
   }
 
   async createCourse(data: Partial<Course>): Promise<Course> {
-    return firstValueFrom(this.http.post<Course>(`${this.api}/courses`, data, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.post<{ course: Course } | Course>(`${this.api}/courses`, data, await this.headers())
+    );
+    return 'course' in res ? res.course : res;
   }
 
   async updateCourse(id: string, data: Partial<Course>): Promise<Course> {
-    return firstValueFrom(this.http.put<Course>(`${this.api}/courses/${id}`, data, await this.headers()));
+    const res = await firstValueFrom(
+      this.http.put<{ course: Course } | Course>(`${this.api}/courses/${id}`, data, await this.headers())
+    );
+    return 'course' in res ? res.course : res;
   }
 
   async deleteCourse(id: string): Promise<void> {
