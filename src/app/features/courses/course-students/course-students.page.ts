@@ -47,7 +47,7 @@ export class CourseStudentsPage implements OnInit {
       ]);
 
       this.students = students;
-      this.course = this.course ?? courses.find(course => course.id === this.courseId) ?? null;
+      this.course = courses.find(course => course.id === this.courseId) ?? this.course ?? null;
       this.selectedIds = new Set(this.course?.students ?? []);
     } catch (err: any) {
       this.showToast(err?.error?.error ?? 'No se pudieron cargar estudiantes', 'danger');
@@ -79,7 +79,8 @@ export class CourseStudentsPage implements OnInit {
       const updated = await this.apiService.updateCourseStudents(this.courseId, Array.from(this.selectedIds));
       this.course = updated;
       this.selectedIds = new Set(updated.students ?? []);
-      this.showToast('Estudiantes asignados correctamente', 'success');
+      await this.loadData();
+      await this.showToast('Estudiantes asignados correctamente', 'success');
     } catch (err: any) {
       this.showToast(err?.error?.error ?? 'Error al asignar estudiantes', 'danger');
     } finally {

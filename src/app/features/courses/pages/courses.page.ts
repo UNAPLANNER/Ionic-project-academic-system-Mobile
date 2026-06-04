@@ -65,6 +65,12 @@ export class CoursesPage implements OnInit {
     this.loadCourses();
   }
 
+  ionViewWillEnter() {
+    if (!this.isFormMode) {
+      this.loadCourses();
+    }
+  }
+
   private buildForm(course?: Course) {
     const scheduleEntries: ScheduleEntry[] = this.parseSchedule(course?.schedule);
 
