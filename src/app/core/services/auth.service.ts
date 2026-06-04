@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth, signInWithCustomToken, signOut } from '@angular/fire/auth';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from '../../../environments/environment';
@@ -13,7 +14,8 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly USER_KEY = 'auth_user';
+  private readonly USER_KEY  = 'auth_user';
+  private readonly TOKEN_KEY = 'auth_token';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -62,6 +64,7 @@ export class AuthService {
     }
   }
 
+  // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
   async getIdToken(): Promise<string | null> {
     const user = this.firebaseAuth.currentUser;
     if (!user) return null;
@@ -78,6 +81,7 @@ export class AuthService {
       await signOut(this.firebaseAuth);
     } catch { /* ignorar */ }
     localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
     this.currentUserSubject.next(null);
   }
 

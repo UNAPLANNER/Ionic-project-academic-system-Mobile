@@ -115,6 +115,22 @@ export class CoursesPage implements OnInit {
     }
   }
 
+  getCardClass(index: number): string {
+    const classes = ['navy', 'blue', 'green', 'teal'];
+
+    return classes[index % classes.length];
+  }
+
+  getCourseIcon(index: number): string {
+    const icons = ['server-outline', 'git-network-outline', 'language-outline', 'calculator-outline'];
+
+    return icons[index % icons.length];
+  }
+
+  getEnrolledCount(course: Course): number {
+    return course.students?.length ?? 0;
+  }
+
   openCreate() {
     this.selectedCourse = null;
     this.formMode = 'create';
