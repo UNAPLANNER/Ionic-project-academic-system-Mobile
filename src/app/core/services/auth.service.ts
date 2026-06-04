@@ -14,7 +14,8 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly USER_KEY = 'auth_user';
+  private readonly USER_KEY  = 'auth_user';
+  private readonly TOKEN_KEY = 'auth_token';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -33,16 +34,11 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<User> {
     try {
-      // 1. Backend valida email en Firestore y devuelve custom token
       const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
       );
-
-      // 2. Intercambiar custom token por Firebase ID token
       await signInWithCustomToken(this.firebaseAuth, response.token);
-
-      // 3. Guardar usuario
-      this.saveUser(response.user);
+      this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -54,15 +50,11 @@ export class AuthService {
 
   async register(email: string, password: string, name: string, role: 'student' | 'teacher'): Promise<User> {
     try {
-      // Backend crea usuario en Firebase Auth + Firestore, devuelve custom token
       const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
       );
-
-      // Intercambiar custom token por Firebase ID token
       await signInWithCustomToken(this.firebaseAuth, response.token);
-
-      this.saveUser(response.user);
+      this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -72,6 +64,7 @@ export class AuthService {
     }
   }
 
+  // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
   async getIdToken(): Promise<string | null> {
     const user = this.firebaseAuth.currentUser ?? await this.waitForFirebaseUser();
 
@@ -92,8 +85,9 @@ export class AuthService {
     });
   }
 
-  private saveUser(user: User) {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  private saveSession(user: User, token: string) {
+    localStorage.setItem(this.USER_KEY,  JSON.stringify(user));
+    localStorage.setItem(this.TOKEN_KEY, token);
     this.currentUserSubject.next(user);
   }
 
@@ -102,6 +96,7 @@ export class AuthService {
       await signOut(this.firebaseAuth);
     } catch { /* ignorar */ }
     localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
     this.currentUserSubject.next(null);
   }
 
