@@ -68,7 +68,7 @@ export class LoginPage implements OnInit {
 
       this.presentToast(`¡Bienvenido ${user.name}!`, 'success');
 
-      const destination = user.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard';
+      const destination = this.getRoleDestination(user.role);
       this.router.navigateByUrl(destination);
     } catch (error: any) {
       this.presentAlert('Error de Autenticación', error.message || 'No se pudo iniciar sesión');
@@ -100,5 +100,11 @@ export class LoginPage implements OnInit {
       buttons: ['OK']
     });
     await alert.present();
+  }
+
+  private getRoleDestination(role: string): string {
+    if (role === 'admin') return '/admin/dashboard';
+    if (role === 'teacher') return '/teacher/dashboard';
+    return '/student/dashboard';
   }
 }
