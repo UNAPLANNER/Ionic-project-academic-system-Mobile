@@ -55,6 +55,9 @@
             <p>Codigo: {{ course.code }}</p>
           </div>
           <div *ngIf="isTeacher" class="course-actions">
+            <button class="students-chip" type="button" (click)="openStudents(course, $event)">
+              Estudiantes
+            </button>
             <button class="edit-chip" type="button" (click)="openEdit(course, $event)">
               Editar
             </button>

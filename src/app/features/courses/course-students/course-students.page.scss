@@ -1,0 +1,51 @@
+.students-shell {
+  min-height: 100%;
+  padding: 14px 14px 92px;
+  background: #f4f7fb;
+}
+
+.course-summary,
+.enrolled-section,
+.assign-section {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.course-summary h2,
+.course-summary p,
+.enrolled-section h3,
+.assign-section h3 {
+  margin: 0 0 8px;
+}
+
+.course-summary strong {
+  color: #166534;
+}
+
+.state-block,
+.empty-box {
+  padding: 18px;
+  text-align: center;
+  color: #64748b;
+}
+
+ion-list {
+  background: transparent;
+}
+
+ion-item {
+  --background: #f0f4f8;
+  --border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.save-footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 12px 14px;
+  background: #fff;
+}
