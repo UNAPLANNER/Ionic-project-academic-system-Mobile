@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth, signInWithCustomToken, signOut } from '@angular/fire/auth';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from '../../../environments/environment';
