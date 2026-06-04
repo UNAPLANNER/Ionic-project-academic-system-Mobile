@@ -13,8 +13,7 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly USER_KEY  = 'auth_user';
-  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'auth_user';
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -37,7 +36,7 @@ export class AuthService {
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
       );
       await signInWithCustomToken(this.firebaseAuth, response.token);
-      this.saveSession(response.user, response.token);
+      this.saveSession(response.user);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -53,7 +52,7 @@ export class AuthService {
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
       );
       await signInWithCustomToken(this.firebaseAuth, response.token);
-      this.saveSession(response.user, response.token);
+      this.saveSession(response.user);
       return response.user;
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -63,14 +62,14 @@ export class AuthService {
     }
   }
 
-  // Devuelve el custom token guardado (el backend lo verifica con jsonwebtoken)
   async getIdToken(): Promise<string | null> {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const user = this.firebaseAuth.currentUser;
+    if (!user) return null;
+    return user.getIdToken();
   }
 
-  private saveSession(user: User, token: string) {
-    localStorage.setItem(this.USER_KEY,  JSON.stringify(user));
-    localStorage.setItem(this.TOKEN_KEY, token);
+  private saveSession(user: User) {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
 
@@ -79,7 +78,6 @@ export class AuthService {
       await signOut(this.firebaseAuth);
     } catch { /* ignorar */ }
     localStorage.removeItem(this.USER_KEY);
-    localStorage.removeItem(this.TOKEN_KEY);
     this.currentUserSubject.next(null);
   }
 
