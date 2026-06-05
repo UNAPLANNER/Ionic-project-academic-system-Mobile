@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Evaluation History
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card *ngIf="evaluations.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        Average Score
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <h2>{{ average }}%</h2>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list *ngIf="evaluations.length > 0">
+
+    <ion-item *ngFor="let evaluation of evaluations">
+
+      <ion-label>
+
+        <h2>{{ evaluation.type }}</h2>
+
+        <p>
+          <strong>Score:</strong>
+          {{ evaluation.score }}
+          /
+          {{ evaluation.maxScore }}
+        </p>
+
+        <p>
+          <strong>Course:</strong>
+          {{ evaluation.courseId }}
+        </p>
+
+        <p>
+          <strong>Date:</strong>
+          {{ evaluation.date | date:'mediumDate' }}
+        </p>
+
+      </ion-label>
+
+    </ion-item>
+
+  </ion-list>
+
+  <div
+    *ngIf="evaluations.length === 0"
+    class="ion-text-center ion-padding">
+
+    <ion-icon
+      name="document-outline"
+      style="font-size: 64px;">
+    </ion-icon>
+
+    <h2>No evaluations found</h2>
+
+    <p>
+      This student has no evaluation records yet.
+    </p>
+
+  </div>
+
+</ion-content>
