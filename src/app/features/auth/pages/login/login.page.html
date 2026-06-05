@@ -46,10 +46,13 @@
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input
               formControlName="password"
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               placeholder="••••••••"
               [class.ion-invalid]="submitted && f['password'].errors">
             </ion-input>
+            <ion-button slot="end" fill="clear" (click)="togglePassword()" type="button">
+              <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+            </ion-button>
           </ion-item>
           <ion-text color="danger" *ngIf="submitted && f['password'].errors">
             <p class="error-text" *ngIf="f['password'].errors['required']">La contraseña es requerida</p>
