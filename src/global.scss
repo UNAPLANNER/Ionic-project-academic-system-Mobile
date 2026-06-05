@@ -96,3 +96,13 @@ ion-fab-button {
   --background: linear-gradient(135deg, #4f46e5, #7c3aed);
   --box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
 }
+
+// Elimina el color de autofill del navegador en todos los inputs
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 9999s ease-in-out 0s !important;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+}

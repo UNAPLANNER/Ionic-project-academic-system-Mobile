@@ -25,4 +25,8 @@ export class StudentService {
   update(id: string, data: Partial<Student>): Promise<Student> {
     return this.api.updateStudent(id, data);
   }
+
+  delete(id: string): Promise<void> {
+    return this.api.deleteStudent(id);
+  }
 }

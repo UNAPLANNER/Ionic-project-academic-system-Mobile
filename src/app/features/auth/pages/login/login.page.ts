@@ -17,6 +17,7 @@ export class LoginPage implements OnInit {
   loading = false;
   submitted = false;
   returnUrl = '';
+  showPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -101,6 +102,8 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+
+  togglePassword() { this.showPassword = !this.showPassword; }
 
   private getRoleDestination(role: string): string {
     if (role === 'admin') return '/admin/dashboard';
