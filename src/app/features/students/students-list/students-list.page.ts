@@ -19,11 +19,22 @@ export class StudentsListPage {
   students: Student[] = [];
   courses: Course[] = [];
   selectedCourseId: string | null = null;
+  searchTerm = '';
   loading = false;
   loadingCourses = false;
   canManage = false;
   userRole: 'admin' | 'teacher' | 'student' | null = null;
   skeletonItems = [1, 2, 3, 4];
+
+  get filteredStudents(): Student[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) return this.students;
+    return this.students.filter(s =>
+      s.name?.toLowerCase().includes(term) ||
+      s.email?.toLowerCase().includes(term) ||
+      s.career?.toLowerCase().includes(term)
+    );
+  }
 
   constructor(
     private studentService: StudentService,
@@ -84,6 +95,42 @@ export class StudentsListPage {
   goToEdit(student: Student) {
     if (!this.canManage) return;
     this.router.navigate([this.userRole === 'admin' ? '/admin/students/edit' : '/teacher/students/edit', student.id]);
+  }
+
+  async confirmDelete(student: Student, event: Event) {
+    event.stopPropagation();
+    if (!this.canManage) return;
+
+    const alert = await this.alertCtrl.create({
+      header: 'Eliminar estudiante',
+      message: `¿Deseas eliminar a "${student.name}"?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => this.deleteStudent(student)
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async deleteStudent(student: Student) {
+    this.loading = true;
+    try {
+      await this.studentService.delete(student.id);
+      const toast = await this.toastCtrl.create({ message: 'Estudiante eliminado correctamente', duration: 2500, color: 'success', position: 'bottom' });
+      await toast.present();
+      await this.loadStudents();
+    } catch (err: any) {
+      const msg = err?.error?.message ?? err?.message ?? 'Error al eliminar estudiante';
+      const toast = await this.toastCtrl.create({ message: msg, duration: 3000, color: 'danger', position: 'bottom' });
+      await toast.present();
+    } finally {
+      this.loading = false;
+    }
   }
 
   async logout() {

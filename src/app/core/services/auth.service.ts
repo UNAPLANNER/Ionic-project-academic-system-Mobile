@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Auth, signInWithCustomToken, signOut } from '@angular/fire/auth';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { Auth, signOut } from '@angular/fire/auth';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { User } from '../models/user.model';
 import { environment } from '../../../environments/environment';
@@ -37,7 +36,6 @@ export class AuthService {
       const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
       );
-      await signInWithCustomToken(this.firebaseAuth, response.token);
       this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
@@ -53,7 +51,6 @@ export class AuthService {
       const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
       );
-      await signInWithCustomToken(this.firebaseAuth, response.token);
       this.saveSession(response.user, response.token);
       return response.user;
     } catch (error) {
@@ -64,20 +61,8 @@ export class AuthService {
     }
   }
 
-  // Returns the Firebase ID token that the backend verifies with Firebase Admin.
   async getIdToken(): Promise<string | null> {
-    const currentUser = this.firebaseAuth.currentUser ?? await this.waitForFirebaseUser();
-    return currentUser ? currentUser.getIdToken() : null;
-  }
-
-  private waitForFirebaseUser(): Promise<FirebaseUser | null> {
-    return new Promise(resolve => {
-      let unsubscribe = () => {};
-      unsubscribe = onAuthStateChanged(this.firebaseAuth, user => {
-        unsubscribe();
-        resolve(user);
-      });
-    });
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   private saveSession(user: User, token: string) {
