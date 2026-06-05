@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../auth/services/auth.service';
@@ -50,6 +51,7 @@ export class CoursesPage implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
+    private router: Router,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private fb: FormBuilder
@@ -57,9 +59,16 @@ export class CoursesPage implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
-    this.isTeacher = user?.role === 'teacher';
+    const role = user?.role as string | undefined;
+    this.isTeacher = role === 'teacher' || role === 'admin';
     this.buildForm();
     this.loadCourses();
+  }
+
+  ionViewWillEnter() {
+    if (!this.isFormMode) {
+      this.loadCourses();
+    }
   }
 
   private buildForm(course?: Course) {
@@ -129,6 +138,11 @@ export class CoursesPage implements OnInit {
 
     this.formMode = 'edit';
     this.buildForm(this.selectedCourse);
+  }
+
+  openStudents(course: Course, event?: Event) {
+    event?.stopPropagation();
+    this.router.navigate(['/teacher/courses', course.id, 'students'], { state: { course } });
   }
 
   async confirmDelete(course: Course, event?: Event) {

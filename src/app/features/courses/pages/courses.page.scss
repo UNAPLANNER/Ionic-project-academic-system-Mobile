@@ -59,6 +59,7 @@
   gap: 6px;
 }
 
+.students-chip,
 .edit-chip,
 .delete-chip {
   align-self: flex-start;
@@ -69,6 +70,7 @@
   font-weight: 800;
 }
 
+.students-chip,
 .edit-chip { background: rgba(255, 255, 255, 0.2); }
 .delete-chip { background: #dc2626; }
 
@@ -137,10 +139,6 @@
 .day-grid .active {
   background: #5b3df2;
   color: #fff;
-}
-
-.schedule-row {
-  padding: 6px;
 }
 
 .time-grid { grid-template-columns: 1fr 1fr; }
