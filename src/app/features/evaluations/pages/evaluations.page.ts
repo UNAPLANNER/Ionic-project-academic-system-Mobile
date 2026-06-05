@@ -72,14 +72,10 @@ export class EvaluationsPage implements OnInit {
         this.students = students;
         this.courses = courses;
       } else if (this.currentUser) {
-        console.log('Usuario actual:', this.currentUser);
-        console.log('ID enviado al backend:', this.currentUser.id);
         const [evaluationResponse, courses] = await Promise.all([
           this.apiService.getStudentEvaluations(this.currentUser.id),
           this.apiService.getCourses()
         ]);
-
-        console.log('Respuesta backend:', evaluationResponse);
         this.evaluations = evaluationResponse.evaluations;
         this.average = evaluationResponse.average;
         this.courses = courses;

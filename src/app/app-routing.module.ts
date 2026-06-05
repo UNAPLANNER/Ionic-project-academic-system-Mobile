@@ -31,10 +31,10 @@ const routes: Routes = [
     path: '**',
     redirectTo: '/auth/login'
   },
-  {
+  /*{
     path: 'evaluation-list',
     loadChildren: () => import('./features/evaluations/evaluation-list/evaluation-list.module').then( m => m.EvaluationListPageModule)
-  }
+  }*/
 
 ];
 
