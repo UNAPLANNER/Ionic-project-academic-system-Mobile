@@ -21,6 +21,8 @@ export class StudentsListPage {
   selectedCourseId: string | null = null;
   loading = false;
   loadingCourses = false;
+  canManage = false;
+  userRole: 'admin' | 'teacher' | 'student' | null = null;
   skeletonItems = [1, 2, 3, 4];
 
   constructor(
@@ -33,6 +35,8 @@ export class StudentsListPage {
   ) {}
 
   async ionViewWillEnter() {
+    this.userRole = this.authService.getUserRole();
+    this.canManage = this.userRole === 'admin';
     await this.loadCourses();
     await this.loadStudents();
   }
@@ -73,11 +77,13 @@ export class StudentsListPage {
   }
 
   goToCreate() {
-    this.router.navigate(['/teacher/students/new']);
+    if (!this.canManage) return;
+    this.router.navigate([this.userRole === 'admin' ? '/admin/students/new' : '/teacher/students/new']);
   }
 
   goToEdit(student: Student) {
-    this.router.navigate(['/teacher/students/edit', student.id]);
+    if (!this.canManage) return;
+    this.router.navigate([this.userRole === 'admin' ? '/admin/students/edit' : '/teacher/students/edit', student.id]);
   }
 
   async logout() {
