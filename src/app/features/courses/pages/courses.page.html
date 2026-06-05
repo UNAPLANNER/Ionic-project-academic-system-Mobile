@@ -7,7 +7,7 @@
     </ion-buttons>
 
     <ion-title>
-      {{ isFormMode ? (formMode === 'edit' ? 'Editar Curso' : 'Nuevo Curso') : (isTeacher ? 'Cursos' : 'Mis Cursos') }}
+      {{ isFormMode ? (formMode === 'edit' ? 'Editar Curso' : 'Nuevo Curso') : (userRole === 'student' ? 'Mis Cursos' : 'Cursos') }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -54,14 +54,17 @@
             <h2>{{ course.name }}</h2>
             <p>Codigo: {{ course.code }}</p>
           </div>
-          <div *ngIf="isTeacher" class="course-actions">
-            <button class="students-chip" type="button" (click)="openStudents(course, $event)">
+          <div *ngIf="canViewCourseStudents || canManage" class="course-actions">
+            <button *ngIf="canViewCourseStudents" class="students-chip" type="button" (click)="openStudents(course, $event)">
               Estudiantes
             </button>
-            <button class="edit-chip" type="button" (click)="openEdit(course, $event)">
+            <button *ngIf="canManage" class="teacher-chip" type="button" (click)="openTeacherAssignment(course, $event)">
+              Profesor
+            </button>
+            <button *ngIf="canManage" class="edit-chip" type="button" (click)="openEdit(course, $event)">
               Editar
             </button>
-            <button class="delete-chip" type="button" (click)="confirmDelete(course, $event)">
+            <button *ngIf="canManage" class="delete-chip" type="button" (click)="confirmDelete(course, $event)">
               Eliminar
             </button>
           </div>
@@ -85,7 +88,7 @@
     </section>
   </section>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isFormMode && isTeacher">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isFormMode && canManage">
     <ion-fab-button color="success" (click)="openCreate()" aria-label="Crear curso">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>

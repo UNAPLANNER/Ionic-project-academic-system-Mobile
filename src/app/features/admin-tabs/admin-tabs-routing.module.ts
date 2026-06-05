@@ -1,27 +1,33 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { StudentTabsPage } from './student-tabs.page';
+import { AdminTabsPage } from './admin-tabs.page';
+import { roleGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: StudentTabsPage,
+    component: AdminTabsPage,
+    canActivate: [roleGuard(['admin'])],
     children: [
       {
         path: 'dashboard',
         loadChildren: () => import('../dashboard/dashboard-module').then(m => m.DashboardModule)
       },
       {
-        path: 'courses',
-        loadChildren: () => import('../courses/courses-module').then(m => m.CoursesModule)
+        path: 'teachers/new',
+        loadComponent: () => import('../teachers/teacher-form/teacher-form.page').then(m => m.TeacherFormPage)
+      },
+      {
+        path: 'teachers',
+        loadComponent: () => import('../teachers/teachers-list/teachers-list.page').then(m => m.TeachersListPage)
       },
       {
         path: 'students',
         loadChildren: () => import('../students/students-module').then(m => m.StudentsModule)
       },
       {
-        path: 'evaluations',
-        loadChildren: () => import('../evaluations/evaluations-module').then(m => m.EvaluationsModule)
+        path: 'courses',
+        loadChildren: () => import('../courses/courses-module').then(m => m.CoursesModule)
       },
       {
         path: '',
@@ -36,4 +42,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class StudentTabsRoutingModule {}
+export class AdminTabsRoutingModule {}

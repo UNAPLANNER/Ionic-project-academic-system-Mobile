@@ -60,6 +60,7 @@
 }
 
 .students-chip,
+.teacher-chip,
 .edit-chip,
 .delete-chip {
   align-self: flex-start;
@@ -71,6 +72,7 @@
 }
 
 .students-chip,
+.teacher-chip,
 .edit-chip { background: rgba(255, 255, 255, 0.2); }
 .delete-chip { background: #dc2626; }
 

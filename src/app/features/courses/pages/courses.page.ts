@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, TeacherSummary } from '../../../core/services/api.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { Course } from '../../../core/models/course.model';
 
@@ -22,11 +22,14 @@ interface ScheduleEntry {
 })
 export class CoursesPage implements OnInit {
   courses: Course[] = [];
+  teachers: TeacherSummary[] = [];
   selectedCourse: Course | null = null;
   searchTerm = '';
   loading = false;
   saving = false;
-  isTeacher = false;
+  userRole: 'admin' | 'teacher' | 'student' | null = null;
+  canManage = false;
+  canViewCourseStudents = false;
   formMode: 'list' | 'create' | 'edit' = 'list';
   courseForm!: FormGroup;
   days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
@@ -59,8 +62,9 @@ export class CoursesPage implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
-    const role = user?.role as string | undefined;
-    this.isTeacher = role === 'teacher' || role === 'admin';
+    this.userRole = user?.role ?? null;
+    this.canManage = this.userRole === 'admin';
+    this.canViewCourseStudents = this.userRole === 'admin' || this.userRole === 'teacher' || this.userRole === 'student';
     this.buildForm();
     this.loadCourses();
   }
@@ -126,6 +130,7 @@ export class CoursesPage implements OnInit {
   }
 
   openCreate() {
+    if (!this.canManage) return;
     this.selectedCourse = null;
     this.formMode = 'create';
     this.buildForm();
@@ -133,6 +138,7 @@ export class CoursesPage implements OnInit {
 
   openEdit(course?: Course, event?: Event) {
     event?.stopPropagation();
+    if (!this.canManage) return;
     if (course) this.selectedCourse = course;
     if (!this.selectedCourse) return;
 
@@ -142,11 +148,76 @@ export class CoursesPage implements OnInit {
 
   openStudents(course: Course, event?: Event) {
     event?.stopPropagation();
-    this.router.navigate(['/teacher/courses', course.id, 'students'], { state: { course } });
+    if (!this.canViewCourseStudents) return;
+    const basePath = this.userRole === 'admin'
+      ? '/admin/courses'
+      : this.userRole === 'teacher'
+        ? '/teacher/courses'
+        : '/student/courses';
+    this.router.navigate([basePath, course.id, 'students'], { state: { course } });
+  }
+
+  async openTeacherAssignment(course: Course, event?: Event) {
+    event?.stopPropagation();
+    if (!this.canManage) return;
+
+    try {
+      if (this.teachers.length === 0) {
+        this.teachers = await this.apiService.getTeachers();
+      }
+
+      if (this.teachers.length === 0) {
+        this.showToast('No hay profesores registrados', 'danger');
+        return;
+      }
+
+      const alert = await this.alertCtrl.create({
+        header: 'Asignar profesor',
+        subHeader: course.name,
+        inputs: this.teachers.map(teacher => ({
+          type: 'radio',
+          label: `${teacher.name} - ${teacher.email}`,
+          value: teacher.id,
+          checked: teacher.id === course.teacherId
+        })),
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          {
+            text: 'Guardar',
+            handler: teacherId => {
+              if (!teacherId) return false;
+              this.assignTeacher(course, teacherId);
+              return true;
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    } catch (err: any) {
+      const msg = err?.error?.error ?? err?.message ?? 'No se pudieron cargar profesores';
+      this.showToast(msg, 'danger');
+    }
+  }
+
+  private async assignTeacher(course: Course, teacherId: string) {
+    this.loading = true;
+    try {
+      const updated = await this.apiService.updateCourseTeacher(course.id, teacherId);
+      this.selectedCourse = updated;
+      this.showToast('Profesor asignado correctamente', 'success');
+      await this.loadCourses();
+    } catch (err: any) {
+      const msg = err?.error?.error ?? err?.message ?? 'Error al asignar profesor';
+      this.showToast(msg, 'danger');
+    } finally {
+      this.loading = false;
+    }
   }
 
   async confirmDelete(course: Course, event?: Event) {
     event?.stopPropagation();
+    if (!this.canManage) return;
 
     const alert = await this.alertCtrl.create({
       header: 'Eliminar curso',
@@ -200,6 +271,7 @@ export class CoursesPage implements OnInit {
   }
 
   async saveCourse() {
+    if (!this.canManage) return;
     if (this.courseForm.invalid || this.scheduleEntries.length === 0) {
       this.courseForm.markAllAsTouched();
       if (this.scheduleEntries.length === 0) this.showToast('Selecciona al menos un dia', 'danger');

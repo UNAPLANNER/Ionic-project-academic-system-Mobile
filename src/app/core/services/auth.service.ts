@@ -48,7 +48,7 @@ export class AuthService {
     }
   }
 
-  async register(email: string, password: string, name: string, role: 'student' | 'teacher'): Promise<User> {
+  async register(email: string, password: string, name: string, role: 'student' | 'teacher' | 'admin'): Promise<User> {
     try {
       const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { email, password, name, role })
@@ -103,7 +103,7 @@ export class AuthService {
     return this.currentUserSubject.value !== null;
   }
 
-  getUserRole(): 'student' | 'teacher' | null {
+  getUserRole(): 'student' | 'teacher' | 'admin' | null {
     const user = this.currentUserSubject.value;
     return user ? user.role : null;
   }

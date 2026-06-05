@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Profesores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToCreate()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Nuevo
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="loadTeachers(); $event.target.complete()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="loading" class="state-block">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando profesores...</p>
+  </div>
+
+  <div *ngIf="!loading && teachers.length === 0" class="state-block">
+    <ion-icon name="school-outline"></ion-icon>
+    <p>No hay profesores registrados</p>
+  </div>
+
+  <ion-list *ngIf="!loading && teachers.length > 0">
+    <ion-item *ngFor="let teacher of teachers">
+      <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{ teacher.name }}</h2>
+        <p>{{ teacher.email }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="success" (click)="goToCreate()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

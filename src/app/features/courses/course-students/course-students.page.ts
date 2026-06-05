@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Course } from '../../../core/models/course.model';
 import { Student } from '../../../core/models/student.model';
 
@@ -20,6 +21,8 @@ export class CourseStudentsPage implements OnInit {
   students: Student[] = [];
   searchTerm = '';
   selectedIds = new Set<string>();
+  canManage = false;
+  userRole: 'admin' | 'teacher' | 'student' | null = null;
   loading = false;
   saving = false;
 
@@ -45,12 +48,15 @@ export class CourseStudentsPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
+    private authService: AuthService,
     private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
     this.courseId = this.route.snapshot.paramMap.get('id') ?? '';
     this.course = history.state?.course ?? null;
+    this.userRole = this.authService.getUserRole();
+    this.canManage = this.userRole === 'admin';
     this.loadData();
   }
 
@@ -73,6 +79,7 @@ export class CourseStudentsPage implements OnInit {
   }
 
   toggleStudent(studentId: string, checked: boolean) {
+    if (!this.canManage) return;
     if (checked) {
       this.selectedIds.add(studentId);
       return;
@@ -82,6 +89,7 @@ export class CourseStudentsPage implements OnInit {
   }
 
   removeStudent(studentId: string) {
+    if (!this.canManage) return;
     this.selectedIds.delete(studentId);
   }
 
@@ -90,6 +98,7 @@ export class CourseStudentsPage implements OnInit {
   }
 
   async saveStudents() {
+    if (!this.canManage) return;
     this.saving = true;
     try {
       const updated = await this.apiService.updateCourseStudents(this.courseId, Array.from(this.selectedIds));
@@ -105,7 +114,12 @@ export class CourseStudentsPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/teacher/courses']);
+    const basePath = this.userRole === 'admin'
+      ? '/admin/courses'
+      : this.userRole === 'teacher'
+        ? '/teacher/courses'
+        : '/student/courses';
+    this.router.navigate([basePath]);
   }
 
   private async showToast(message: string, color: 'success' | 'danger') {

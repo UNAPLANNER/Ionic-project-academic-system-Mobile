@@ -33,8 +33,13 @@ export const roleGuard = (requiredRoles: ('student' | 'teacher' | 'admin')[]): C
       return true;
     }
 
-    // Redirect to dashboard if the user doesn't have the required role=
-    router.navigate(['/dashboard']);
+    if (userRole === 'admin') {
+      router.navigate(['/admin/dashboard']);
+    } else if (userRole === 'teacher') {
+      router.navigate(['/teacher/dashboard']);
+    } else {
+      router.navigate(['/student/dashboard']);
+    }
     return false;
   };
 };
