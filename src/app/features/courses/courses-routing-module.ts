@@ -6,6 +6,10 @@ const routes: Routes = [
   {
     path: '',
     component: CoursesPage
+  },
+  {
+    path: ':id/students',
+    loadComponent: () => import('./course-students/course-students.page').then(m => m.CourseStudentsPage)
   }
 ];
 

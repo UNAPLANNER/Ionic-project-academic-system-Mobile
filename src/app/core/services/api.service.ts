@@ -96,6 +96,17 @@ export class ApiService {
     return 'course' in res ? res.course : res;
   }
 
+  async updateCourseStudents(id: string, students: string[]): Promise<Course> {
+    const res = await firstValueFrom(
+      this.http.put<{ course: Course } | Course>(
+        `${this.api}/courses/${id}/students`,
+        { students },
+        await this.headers()
+      )
+    );
+    return 'course' in res ? res.course : res;
+  }
+
   async deleteCourse(id: string): Promise<void> {
     return firstValueFrom(this.http.delete<void>(`${this.api}/courses/${id}`, await this.headers()));
   }
