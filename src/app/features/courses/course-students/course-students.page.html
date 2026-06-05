@@ -5,10 +5,10 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Asignacion de estudiantes</ion-title>
+    <ion-title>{{ canManage ? 'Asignacion de estudiantes' : 'Estudiantes del curso' }}</ion-title>
   </ion-toolbar>
 
-  <ion-toolbar *ngIf="!loading" class="search-toolbar">
+  <ion-toolbar *ngIf="!loading && canManage" class="search-toolbar">
     <ion-searchbar
       class="student-search"
       [(ngModel)]="searchTerm"
@@ -33,7 +33,7 @@
     </div>
 
     <ng-container *ngIf="!loading">
-      <section class="assign-section">
+      <section class="assign-section" *ngIf="canManage">
         <h3>Asignar estudiantes</h3>
 
         <div *ngIf="students.length === 0" class="empty-box">
@@ -48,6 +48,7 @@
           <ion-item *ngFor="let student of filteredStudents">
             <ion-checkbox
               slot="start"
+              [disabled]="!canManage"
               [checked]="isSelected(student.id)"
               (ionChange)="toggleStudent(student.id, $event.detail.checked)"
             ></ion-checkbox>
@@ -73,7 +74,7 @@
               <h2>{{ student.name }}</h2>
               <p>{{ student.email }}</p>
             </ion-label>
-            <ion-button fill="clear" color="danger" slot="end" (click)="removeStudent(student.id)">
+            <ion-button *ngIf="canManage" fill="clear" color="danger" slot="end" (click)="removeStudent(student.id)">
               <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
             </ion-button>
           </ion-item>
@@ -82,7 +83,7 @@
     </ng-container>
   </section>
 
-  <ion-footer class="save-footer" *ngIf="!loading">
+  <ion-footer class="save-footer" *ngIf="!loading && canManage">
     <ion-button expand="block" color="success" [disabled]="saving" (click)="saveStudents()">
       <ion-spinner *ngIf="saving" name="crescent" slot="start"></ion-spinner>
       Guardar asignacion
