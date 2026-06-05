@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { IonicModule, ToastController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StudentService } from '../../../core/services/student.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-student-form',
@@ -27,7 +28,8 @@ export class StudentFormPage implements OnInit {
     private studentService: StudentService,
     private toastCtrl: ToastController,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   async ngOnInit() {
@@ -95,7 +97,8 @@ export class StudentFormPage implements OnInit {
   }
 
   private goBack() {
-    this.router.navigate(['/teacher/students']);
+    const role = this.authService.getUserRole();
+    this.router.navigate([role === 'admin' ? '/admin/students' : '/teacher/students']);
   }
 
   hasError(field: string, error: string): boolean {

@@ -13,6 +13,11 @@ const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'admin',
+    loadChildren: () => import('./features/admin-tabs/admin-tabs.module').then(m => m.AdminTabsModule),
+    canActivate: [authGuard]
+  },
+  {
     path: 'student',
     loadChildren: () => import('./features/student-tabs/student-tabs.module').then(m => m.StudentTabsModule),
     canActivate: [authGuard]

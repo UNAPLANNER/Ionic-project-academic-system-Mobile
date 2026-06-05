@@ -21,6 +21,19 @@ export interface CoursePerformance {
   totalStudents: number;
 }
 
+export interface TeacherSummary {
+  id: string;
+  name: string;
+  email: string;
+  role: 'teacher';
+}
+
+export interface CreateTeacherPayload {
+  name: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private api = environment.apiUrl;
@@ -59,6 +72,20 @@ export class ApiService {
 
   async deleteStudent(id: string): Promise<void> {
     return firstValueFrom(this.http.delete<void>(`${this.api}/students/${id}`, await this.headers()));
+  }
+
+  async getTeachers(): Promise<TeacherSummary[]> {
+    const res = await firstValueFrom(
+      this.http.get<{ teachers: TeacherSummary[] } | TeacherSummary[]>(`${this.api}/users/teachers`, await this.headers())
+    );
+    return Array.isArray(res) ? res : res.teachers ?? [];
+  }
+
+  async createTeacher(data: CreateTeacherPayload): Promise<TeacherSummary> {
+    const res = await firstValueFrom(
+      this.http.post<{ teacher: TeacherSummary } | TeacherSummary>(`${this.api}/users/teachers`, data, await this.headers())
+    );
+    return 'teacher' in res ? res.teacher : res;
   }
 
   // ── Courses ─────────────────────────────────────────────────────
@@ -101,6 +128,17 @@ export class ApiService {
       this.http.put<{ course: Course } | Course>(
         `${this.api}/courses/${id}/students`,
         { students },
+        await this.headers()
+      )
+    );
+    return 'course' in res ? res.course : res;
+  }
+
+  async updateCourseTeacher(id: string, teacherId: string): Promise<Course> {
+    const res = await firstValueFrom(
+      this.http.put<{ course: Course } | Course>(
+        `${this.api}/courses/${id}/teacher`,
+        { teacherId },
         await this.headers()
       )
     );

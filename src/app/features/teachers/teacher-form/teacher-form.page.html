@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nuevo Profesor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <section class="form-shell">
+    <div class="form-heading">
+      <ion-icon name="school-outline"></ion-icon>
+      <h1>Registrar profesor</h1>
+      <p>Completa los datos basicos para crear el acceso del profesor.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="field-group">
+        <label class="field-label">Nombre completo</label>
+        <ion-item class="field-item" [class.field-error]="hasError('name', 'required') || hasError('name', 'minlength')">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-input formControlName="name" type="text" placeholder="Ej: Maria Rodriguez"></ion-input>
+        </ion-item>
+        <p class="error-msg" *ngIf="hasError('name', 'required')">El nombre es requerido</p>
+        <p class="error-msg" *ngIf="hasError('name', 'minlength')">Minimo 3 caracteres</p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Correo electronico</label>
+        <ion-item class="field-item" [class.field-error]="hasError('email', 'required') || hasError('email', 'email')">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input formControlName="email" type="email" placeholder="Ej: profesor@una.ac.cr"></ion-input>
+        </ion-item>
+        <p class="error-msg" *ngIf="hasError('email', 'required')">El correo es requerido</p>
+        <p class="error-msg" *ngIf="hasError('email', 'email')">Ingresa un correo valido</p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Contrasena temporal</label>
+        <ion-item class="field-item" [class.field-error]="hasError('password', 'required') || hasError('password', 'minlength')">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input formControlName="password" type="password" placeholder="Minimo 6 caracteres"></ion-input>
+        </ion-item>
+        <p class="error-msg" *ngIf="hasError('password', 'required')">La contrasena es requerida</p>
+        <p class="error-msg" *ngIf="hasError('password', 'minlength')">Minimo 6 caracteres</p>
+      </div>
+
+      <ion-button expand="block" type="submit" class="save-btn" [disabled]="saving">
+        <ion-spinner *ngIf="saving" name="crescent" slot="start"></ion-spinner>
+        Registrar Profesor
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" color="medium" class="cancel-btn" type="button" (click)="goBack()">
+        Cancelar
+      </ion-button>
+    </form>
+  </section>
+</ion-content>

@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth.service';
-import { ApiService, DashboardMetrics, CoursePerformance } from '../../../core/services/api.service';
+import { ApiService, DashboardMetrics, CoursePerformance, TeacherSummary } from '../../../core/services/api.service';
 import { User } from '../../../core/models/user.model';
 import { Evaluation } from '../../../core/models/evaluation.model';
 import { Course } from '../../../core/models/course.model';
+import { Student } from '../../../core/models/student.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +18,7 @@ import { Course } from '../../../core/models/course.model';
 })
 export class DashboardPage implements OnInit {
   currentUser: User | null = null;
+  isAdmin = false;
   isTeacher = false;
   loading = false;
 
@@ -27,6 +29,8 @@ export class DashboardPage implements OnInit {
   // Student data
   myEvaluations: Evaluation[] = [];
   myCourses: Course[] = [];
+  students: Student[] = [];
+  teachers: TeacherSummary[] = [];
 
   constructor(
     private authService: AuthService,
@@ -38,6 +42,7 @@ export class DashboardPage implements OnInit {
   ngOnInit() {
     this.authService.currentUser$.subscribe(async user => {
       this.currentUser = user;
+      this.isAdmin = user?.role === 'admin';
       this.isTeacher = user?.role === 'teacher';
       if (user) {
         await this.loadData(user);
@@ -48,7 +53,14 @@ export class DashboardPage implements OnInit {
   async loadData(user: User) {
     this.loading = true;
     try {
-      if (this.isTeacher) {
+      if (this.isAdmin) {
+        const [students, teachers] = await Promise.all([
+          this.apiService.getStudents(),
+          this.apiService.getTeachers()
+        ]);
+        this.students = students;
+        this.teachers = teachers;
+      } else if (this.isTeacher) {
         const [metrics, performance] = await Promise.all([
           this.apiService.getDashboardMetrics(),
           this.apiService.getDashboardPerformance()
@@ -97,5 +109,9 @@ export class DashboardPage implements OnInit {
       ]
     });
     await alert.present();
+  }
+
+  goTo(path: string) {
+    this.router.navigate([path]);
   }
 }

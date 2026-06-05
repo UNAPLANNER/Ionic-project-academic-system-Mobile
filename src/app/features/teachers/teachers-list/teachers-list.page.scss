@@ -1,0 +1,16 @@
+.state-block {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  text-align: center;
+  color: #64748b;
+}
+
+.state-block ion-icon {
+  font-size: 40px;
+}
+
+ion-list {
+  border-radius: 8px;
+  background: #fff;
+}

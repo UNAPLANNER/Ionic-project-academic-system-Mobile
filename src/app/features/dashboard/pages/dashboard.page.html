@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>{{ isTeacher ? 'Panel del Profesor' : 'Mi Panel' }}</ion-title>
+    <ion-title>{{ isAdmin ? 'Panel Administrativo' : (isTeacher ? 'Panel del Profesor' : 'Mi Panel') }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="logout()">
         <ion-icon name="log-out-outline"></ion-icon>
@@ -24,14 +24,59 @@
     <!-- Bienvenida -->
     <div class="welcome-card">
       <div class="welcome-avatar">
-        <ion-icon [name]="isTeacher ? 'school' : 'person'"></ion-icon>
+        <ion-icon [name]="isAdmin ? 'shield-checkmark' : (isTeacher ? 'school' : 'person')"></ion-icon>
       </div>
       <div class="welcome-text">
-        <p class="welcome-role">{{ isTeacher ? 'Profesor' : 'Estudiante' }}</p>
+        <p class="welcome-role">{{ isAdmin ? 'Administrador' : (isTeacher ? 'Profesor' : 'Estudiante') }}</p>
         <h2 class="welcome-name">Hola, {{ currentUser.name }}</h2>
         <p class="welcome-email">{{ currentUser.email }}</p>
       </div>
     </div>
+
+    <!-- VISTA ADMIN -->
+    <ng-container *ngIf="isAdmin">
+      <ion-grid class="metrics-grid">
+        <ion-row>
+          <ion-col size="6">
+            <div class="metric-tile tile-indigo" (click)="goTo('/admin/teachers')">
+              <ion-icon name="school"></ion-icon>
+              <div class="metric-value">{{ teachers.length }}</div>
+              <div class="metric-label">Profesores</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-violet" (click)="goTo('/admin/students')">
+              <ion-icon name="people"></ion-icon>
+              <div class="metric-value">{{ students.length }}</div>
+              <div class="metric-label">Estudiantes</div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div class="section-header">
+        <ion-icon name="settings-outline" color="primary"></ion-icon>
+        <span>Gestion administrativa</span>
+      </div>
+      <ion-card>
+        <ion-list lines="full">
+          <ion-item button (click)="goTo('/admin/teachers')">
+            <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Profesores</h2>
+              <p>Consulta los profesores registrados</p>
+            </ion-label>
+          </ion-item>
+          <ion-item button (click)="goTo('/admin/students')">
+            <ion-icon name="people-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Estudiantes</h2>
+              <p>Gestiona estudiantes y datos academicos</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card>
+    </ng-container>
 
     <!-- ── VISTA PROFESOR ───────────────────────────────── -->
     <ng-container *ngIf="isTeacher">
@@ -95,7 +140,7 @@
     </ng-container>
 
     <!-- ── VISTA ESTUDIANTE ─────────────────────────────── -->
-    <ng-container *ngIf="!isTeacher">
+    <ng-container *ngIf="!isTeacher && !isAdmin">
 
       <!-- Resumen -->
       <ion-grid class="metrics-grid">
