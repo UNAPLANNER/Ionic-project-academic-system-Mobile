@@ -30,12 +30,7 @@ const routes: Routes = [
   {
     path: '**',
     redirectTo: '/auth/login'
-  },
-  /*{
-    path: 'evaluation-list',
-    loadChildren: () => import('./features/evaluations/evaluation-list/evaluation-list.page').then( m => m.EvaluationListPage)
-  }*/
-
+  }
 ];
 
 @NgModule({

@@ -23,7 +23,8 @@ const routes: Routes = [
       },
       {
         path: 'evaluations',
-        loadChildren: () => import('../evaluations/evaluations-module').then(m => m.EvaluationsModule)
+        loadChildren: () => import('../evaluations/evaluations-module').then(m => m.EvaluationsModule),
+         canActivate: [roleGuard(['teacher', 'admin'])]
       },
       {
         path: '',

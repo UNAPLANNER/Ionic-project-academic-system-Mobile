@@ -1,6 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="academic-header">
-    <ion-title>Mis Notas</ion-title>
+    <ion-title>{{ currentUser?.role === 'student'
+        ? 'Mis Notas'
+        : 'Evaluaciones del Estudiante' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,6 +10,19 @@
 
   <div *ngIf="loading" class="ion-text-center ion-padding">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
+
+   <div *ngIf="!loading && evaluations.length > 0" class="average-container">
+
+    <ion-card class="average-card">
+      <ion-card-content class="ion-text-center">
+
+        <h2>Promedio General</h2>
+        <h1>{{ average | number:'1.0-0' }}%</h1>
+
+      </ion-card-content>
+    </ion-card>
+
   </div>
 
   <div *ngIf="!loading && evaluations.length > 0" class="cards-grid-container">
@@ -18,7 +33,7 @@
         
         <div class="card-header-row">
           <div class="title-group">
-            <span class="exam-type-title">Examen</span>
+            <span class="exam-type-title">{{ getEvaluationType(ev.type) }}</span>
             <ion-icon name="school" class="exam-icon"></ion-icon>
           </div>
           
@@ -55,7 +70,13 @@
 
   <div *ngIf="!loading && evaluations.length === 0" class="no-data-container">
     <ion-icon name="document-outline" class="no-data-icon"></ion-icon>
-    <p>No tienes evaluaciones aún.</p>
+    <h2>No hay evaluaciones</h2>
+
+    <p>
+      {{ currentUser?.role === 'student'
+        ? 'Aún no tienes notas registradas'
+        : 'Este estudiante no tiene evaluaciones' }}
+    </p>
   </div>
 
 </ion-content>

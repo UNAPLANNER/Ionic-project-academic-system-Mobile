@@ -21,9 +21,16 @@ export class EvaluationListPage implements OnInit {
   courses: any[] = [];
   average: number = 0;
   studentId: string = '';
+  currentUser: any;
   
-  // 1. SOLUCIÓN: Agregamos la propiedad 'loading' aquí
   loading: boolean = false; 
+  //Dictionary for mapping database types to Spanish and uppercase letters
+  typeTranslations: { [key: string]: string } = {
+    'exam': 'EXAMEN',
+    'assignment': 'TAREA',
+    'quiz': 'QUIZ',
+    'project': 'PROYECTO'
+  };
 
   constructor(
     private apiService: ApiService,
@@ -32,6 +39,8 @@ export class EvaluationListPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.currentUser = this.authService.getCurrentUser();
+    await this.setStudentId();
     await this.loadStudentId();
     await this.loadData();
   }
@@ -45,7 +54,20 @@ export class EvaluationListPage implements OnInit {
       this.studentId = this.route.snapshot.paramMap.get('id') || '';
     }
   }
+  //Method that assigns the student ID
+  setStudentId() {
+    const role = this.currentUser?.role;
+    const routeId = this.route.snapshot.paramMap.get('id');
 
+    if (role === 'student') {
+      //Students can ONLY view their own information
+      this.studentId = this.currentUser.id;
+    } else {
+      // A teacher can see any student
+      this.studentId = routeId || '';
+    }
+  }
+  //retrieves data from the backend
   async loadData() {
     this.loading = true; 
     
@@ -66,7 +88,11 @@ export class EvaluationListPage implements OnInit {
       this.loading = false; 
     }
   }
-
+  getEvaluationType(type: string): string {
+    if (!type) return 'EVALUACIÓN';
+    return this.typeTranslations[type.toLowerCase()] || type.toUpperCase();
+  }
+  //Helper that cleans up and converts the evaluation type for HTML
   getCourseName(courseId: string): string {
     return this.courses.find(c => c.id === courseId)?.name || 'Curso';
   }
@@ -74,7 +100,8 @@ export class EvaluationListPage implements OnInit {
   scorePercent(ev: Evaluation): number {
     return Math.round((ev.score / ev.maxScore) * 100);
   }
-
+  
+  //The method evaluates that percentage using if statements to determine which color to display
   getEvaluationCardStyle(ev: any) {
     const percent = (ev.score / ev.maxScore) * 100;
 
