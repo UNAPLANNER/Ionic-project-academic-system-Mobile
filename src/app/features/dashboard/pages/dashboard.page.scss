@@ -104,6 +104,15 @@
   }
 }
 
+.tile-red {
+  background: #ef4444;
+  color: white;
+}
+
+.tile-red ion-icon {
+  color: white;
+}
+
 .tile-indigo  { background: linear-gradient(135deg, #4f46e5, #6366f1); }
 .tile-violet  { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
 .tile-purple  { background: linear-gradient(135deg, #9333ea, #a855f7); }

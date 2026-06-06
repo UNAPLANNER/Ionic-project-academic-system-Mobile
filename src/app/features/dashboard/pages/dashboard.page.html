@@ -108,8 +108,19 @@
           <ion-col size="6">
             <div class="metric-tile tile-fuchsia">
               <ion-icon name="star"></ion-icon>
-              <div class="metric-value">{{ metrics.averageScore | number:'1.1-1' }}</div>
-              <div class="metric-label">Promedio</div>
+                <div class="metric-value">
+                  {{ metrics.overallAverage | number:'1.1-1' }}
+                </div>
+                <div class="metric-label">Promedio</div>
+            </div>
+          </ion-col>
+          <ion-col size="6">
+            <div class="metric-tile tile-red">
+              <ion-icon name="warning"></ion-icon>
+              <div class="metric-value">
+                {{ metrics.atRiskCount }}
+              </div>
+              <div class="metric-label">En Riesgo</div>
             </div>
           </ion-col>
         </ion-row>

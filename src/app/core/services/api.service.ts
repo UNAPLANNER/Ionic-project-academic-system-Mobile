@@ -11,7 +11,9 @@ export interface DashboardMetrics {
   totalStudents: number;
   totalCourses: number;
   totalEvaluations: number;
-  averageScore: number;
+  overallAverage: number;
+  atRiskCount: number;
+  performanceByCourse: CoursePerformance[];
 }
 
 export interface CoursePerformance {
