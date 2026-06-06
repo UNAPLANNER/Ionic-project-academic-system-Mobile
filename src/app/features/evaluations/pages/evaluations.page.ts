@@ -27,6 +27,7 @@ export class EvaluationsPage implements OnInit {
   evalForm!: FormGroup;
   editingId: string | null = null;
   showForm = false;
+  average: number = 0;
 
   readonly evalTypes: Array<'exam' | 'assignment' | 'project'> = ['exam', 'assignment', 'project'];
   readonly typeLabels: Record<string, string> = { exam: 'Examen', assignment: 'Tarea', project: 'Proyecto' };
@@ -71,11 +72,12 @@ export class EvaluationsPage implements OnInit {
         this.students = students;
         this.courses = courses;
       } else if (this.currentUser) {
-        const [evaluations, courses] = await Promise.all([
+        const [evaluationResponse, courses] = await Promise.all([
           this.apiService.getStudentEvaluations(this.currentUser.id),
           this.apiService.getCourses()
         ]);
-        this.evaluations = evaluations;
+        this.evaluations = evaluationResponse.evaluations;
+        this.average = evaluationResponse.average;
         this.courses = courses;
       }
     } catch {

@@ -68,12 +68,12 @@ export class DashboardPage implements OnInit {
         this.metrics = metrics;
         this.performance = performance;
       } else {
-        const [courses, evaluations] = await Promise.all([
+        const [courses, evaluationResponse] = await Promise.all([
           this.apiService.getCourses(),
           this.apiService.getStudentEvaluations(user.id)
         ]);
         this.myCourses = courses;
-        this.myEvaluations = evaluations;
+        this.myEvaluations = evaluationResponse.evaluations;
       }
     } catch {
       // API no disponible aún, se muestra datos vacíos
