@@ -1,71 +1,61 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Evaluation History
-    </ion-title>
+<ion-header [translucent]="true">
+  <ion-toolbar class="academic-header">
+    <ion-title>Mis Notas</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true" class="notes-page-background">
 
-  <ion-card *ngIf="evaluations.length > 0">
-    <ion-card-header>
-      <ion-card-title>
-        Average Score
-      </ion-card-title>
-    </ion-card-header>
+  <div *ngIf="loading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+  </div>
 
-    <ion-card-content>
-      <h2>{{ average }}%</h2>
-    </ion-card-content>
-  </ion-card>
+  <div *ngIf="!loading && evaluations.length > 0" class="cards-grid-container">
 
-  <ion-list *ngIf="evaluations.length > 0">
+    <div *ngFor="let ev of evaluations" class="evaluation-card-wrapper">
+      
+      <div class="evaluation-card academic-shadow" [ngStyle]="getEvaluationCardStyle(ev)">
+        
+        <div class="card-header-row">
+          <div class="title-group">
+            <span class="exam-type-title">Examen</span>
+            <ion-icon name="school" class="exam-icon"></ion-icon>
+          </div>
+          
+          <div class="score-badge-container">
+            <span class="score-number">{{ ev.score }}/{{ ev.maxScore }}</span>
+            <span class="score-percent">{{ scorePercent(ev) }}%</span>
+          </div>
+        </div>
 
-    <ion-item *ngFor="let evaluation of evaluations">
+        <div class="card-body-section">
+          
+          <div class="data-field-group">
+            <label class="field-label">CURSO</label>
+            <p class="field-value">{{ getCourseName(ev.courseId) }}</p>
+          </div>
 
-      <ion-label>
+          <div class="data-field-group">
+            <label class="field-label">DESCRIPCIÓN</label>
+            <p class="field-value">{{ ev.description }}</p>
+          </div>
 
-        <h2>{{ evaluation.type }}</h2>
+          <div class="data-field-group">
+            <label class="field-label">FECHA</label>
+            <p class="field-value">{{ ev.date | date:'mediumDate' }}</p>
+          </div>
 
-        <p>
-          <strong>Score:</strong>
-          {{ evaluation.score }}
-          /
-          {{ evaluation.maxScore }}
-        </p>
+        </div>
 
-        <p>
-          <strong>Course:</strong>
-          {{ evaluation.courseId }}
-        </p>
+      </div>
 
-        <p>
-          <strong>Date:</strong>
-          {{ evaluation.date | date:'mediumDate' }}
-        </p>
+    </div>
 
-      </ion-label>
+  </div>
 
-    </ion-item>
-
-  </ion-list>
-
-  <div
-    *ngIf="evaluations.length === 0"
-    class="ion-text-center ion-padding">
-
-    <ion-icon
-      name="document-outline"
-      style="font-size: 64px;">
-    </ion-icon>
-
-    <h2>No evaluations found</h2>
-
-    <p>
-      This student has no evaluation records yet.
-    </p>
-
+  <div *ngIf="!loading && evaluations.length === 0" class="no-data-container">
+    <ion-icon name="document-outline" class="no-data-icon"></ion-icon>
+    <p>No tienes evaluaciones aún.</p>
   </div>
 
 </ion-content>

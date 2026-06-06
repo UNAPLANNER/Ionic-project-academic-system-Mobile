@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
 import { EvaluationsRoutingModule } from './evaluations-routing-module';
+//import { EvaluationsPage } from './pages/evaluations.page';
 
 @NgModule({
   imports: [

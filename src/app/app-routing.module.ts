@@ -33,7 +33,7 @@ const routes: Routes = [
   },
   /*{
     path: 'evaluation-list',
-    loadChildren: () => import('./features/evaluations/evaluation-list/evaluation-list.module').then( m => m.EvaluationListPageModule)
+    loadChildren: () => import('./features/evaluations/evaluation-list/evaluation-list.page').then( m => m.EvaluationListPage)
   }*/
 
 ];
