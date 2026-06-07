@@ -156,8 +156,22 @@ export class ApiService {
     return firstValueFrom(this.http.get<Evaluation[]>(`${this.api}/evaluations`, await this.headers()));
   }
 
-  async getStudentEvaluations(studentId: string): Promise<Evaluation[]> {
+  /*async getStudentEvaluations(studentId: string): Promise<Evaluation[]> {
     return firstValueFrom(this.http.get<Evaluation[]>(`${this.api}/evaluations/student/${studentId}`, await this.headers()));
+  }*/
+  async getStudentEvaluations(studentId: string): Promise<{
+    evaluations: Evaluation[];
+    average: number;
+  }> {
+    return firstValueFrom(
+      this.http.get<{
+        evaluations: Evaluation[];
+        average: number;
+      }>(
+        `${this.api}/evaluations/student/${studentId}`,
+        await this.headers()
+      )
+    );
   }
 
   async createEvaluation(data: Partial<Evaluation>): Promise<Evaluation> {

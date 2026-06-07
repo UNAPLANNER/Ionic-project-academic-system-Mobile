@@ -26,6 +26,7 @@ export class StudentsListPage {
   canManage = false;
   userRole: 'admin' | 'teacher' | 'student' | null = null;
   skeletonItems = [1, 2, 3, 4];
+  
 
   get filteredStudents(): Student[] {
     const term = this.searchTerm.trim().toLowerCase();
@@ -164,5 +165,13 @@ export class StudentsListPage {
 
     await modal.present();
   }
+  openStudentHistory(student: Student) {
+    (document.activeElement as HTMLElement)?.blur();
+
+    setTimeout(() => {
+      this.router.navigate(['/teacher/evaluations', student.id]);
+    }, 50);
+  }
+ 
 
 }
