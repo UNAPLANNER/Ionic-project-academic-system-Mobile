@@ -135,6 +135,14 @@
                       <ion-icon name="clipboard-outline" slot="start"></ion-icon>
                       Evaluar
                     </ion-button>
+                    <ion-button
+                      *ngIf="userRole === 'teacher'"
+                      fill="clear"
+                      color="primary"
+                      (click)="openStudentHistory(student)">
+                      <ion-icon name="time-outline" slot="start"></ion-icon>
+                      Historial
+                    </ion-button>
                   </div>
                 </ion-card-content>
               </ion-card>
