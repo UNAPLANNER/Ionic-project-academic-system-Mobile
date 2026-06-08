@@ -5,56 +5,73 @@ import {
   PushNotificationSchema,
   ActionPerformed
 } from '@capacitor/push-notifications';
+import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
 
-  constructor() {}
+  constructor(
+    private apiService: ApiService,
+    private authService: AuthService
+  ) {}
 
-  async initializePushNotifications() {
+  async initPush() {
 
-    //  Apply for permits
+    // Solicitar permisos
     const permission = await PushNotifications.requestPermissions();
 
     if (permission.receive !== 'granted') {
-      console.log('Push notification permission denied');
+      console.log('Permiso denegado');
       return;
     }
 
-    // Register device
+    // Registrar dispositivo en Firebase
     await PushNotifications.register();
 
-    // Token generated
+    // Obtener el token del dispositivo
     PushNotifications.addListener(
       'registration',
-      (token: Token) => {
-        console.log('FCM Device Token:', token.value);
+      async (token: Token) => {
+
+        console.log('Device Token:', token.value);
+
+        try {
+
+          const user = this.authService.getCurrentUser();
+
+          if (!user) {
+            console.log('No hay usuario autenticado');
+            return;
+          }
+
+          await this.apiService.saveDeviceToken(
+           user.id,
+            token.value
+          );
+
+          console.log('Token guardado correctamente');
+
+        } catch (error) {
+          console.error('Error guardando token:', error);
+        }
+
       }
     );
 
-    // Error register
-    PushNotifications.addListener(
-      'registrationError',
-      (error) => {
-        console.error('Registration error:', error);
-      }
-    );
-
-    // Notification received
     PushNotifications.addListener(
       'pushNotificationReceived',
       (notification: PushNotificationSchema) => {
-        console.log('Push received:', notification);
+        console.log(notification);
       }
     );
 
-    // User taps the notification
     PushNotifications.addListener(
       'pushNotificationActionPerformed',
       (notification: ActionPerformed) => {
-        console.log('Push action performed', notification);
+        console.log(notification);
       }
     );
   }

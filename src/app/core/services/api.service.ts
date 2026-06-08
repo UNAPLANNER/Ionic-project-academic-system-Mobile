@@ -192,4 +192,6 @@ export class ApiService {
   async getDashboardPerformance(): Promise<CoursePerformance[]> {
     return firstValueFrom(this.http.get<CoursePerformance[]>(`${this.api}/dashboard/performance`, await this.headers()));
   }
+
+  async saveDeviceToken(userId: string,deviceToken: string): Promise<any> {return firstValueFrom(this.http.put<any>(`${this.api}/users/device-token`,{userId,deviceToken},await this.headers()));}
 }

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NotificationService } from './core/services/notification.service';
-
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -11,9 +10,10 @@ export class AppComponent {
   constructor(
     private notificationService: NotificationService
   ) {
-     this.initializeApp();
+    this.initializeApp();
   }
-  private async initializeApp() {
-    await this.notificationService.initializePushNotifications();
+
+  initializeApp() {
+    this.notificationService.initPush();
   }
 }
