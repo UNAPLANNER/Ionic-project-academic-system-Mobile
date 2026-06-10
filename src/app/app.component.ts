@@ -7,13 +7,14 @@ import { NotificationService } from './core/services/notification.service';
   standalone: false,
 })
 export class AppComponent {
-  constructor(
-    private notificationService: NotificationService
-  ) {
+ constructor(private notificationService: NotificationService) {}
+
+  ngOnInit() {
     this.initializeApp();
   }
 
   initializeApp() {
     this.notificationService.initPush();
   }
+
 }

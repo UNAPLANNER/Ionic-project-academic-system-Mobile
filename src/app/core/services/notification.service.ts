@@ -60,7 +60,7 @@ export class NotificationService {
 
       }
     );
-
+    
     PushNotifications.addListener(
       'pushNotificationReceived',
       (notification: PushNotificationSchema) => {

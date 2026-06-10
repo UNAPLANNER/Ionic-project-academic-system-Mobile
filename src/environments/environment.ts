@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
+  //apiUrl: 'http://192.168.1.153:3000/api',
   firebase: {
     apiKey: 'AIzaSyCDf7p81RogGmx85Ag1ee1szV5J6ffl0O0',
     authDomain: 'academic-system-una.firebaseapp.com',
