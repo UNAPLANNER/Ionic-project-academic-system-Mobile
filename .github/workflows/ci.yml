@@ -21,5 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Run automated tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
       - name: Build
         run: npx ng build --configuration=production

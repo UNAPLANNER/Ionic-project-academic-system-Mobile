@@ -9,6 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:admin": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/admin-tabs.page.spec.ts",
+    "test:courses": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/courses.page.spec.ts",
     "lint": "ng lint"
   },
   "private": true,
