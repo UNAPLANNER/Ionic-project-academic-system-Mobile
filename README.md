@@ -9,7 +9,7 @@
 ---
 
 ## Technical Video
-> [Watch on YouTube](LINK_TO_VIDEO_HERE) ← *Update once published*
+> [Watch on YouTube](https://youtu.be/gerJrx91a_o)
 
 ---
 
@@ -34,7 +34,7 @@
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Ionic | 7.x | Main mobile framework |
-| Angular | 20.x | Frontend framework |
+| Angular | 19.x | Frontend framework |
 | TypeScript | 5.x | Programming language |
 | Firebase Auth | 10.x | User authentication |
 | Cloud Firestore | 10.x | Cloud database |
