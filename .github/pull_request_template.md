@@ -42,3 +42,5 @@ Closes #
 - [ ] No hardcoded credentials or sensitive data
 - [ ] Commit messages follow the convention (`feat:`, `fix:`, `docs:`...)
 - [ ] Branch is up to date with `develop`
+
+@

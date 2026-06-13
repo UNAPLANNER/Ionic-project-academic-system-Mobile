@@ -34,4 +34,75 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+// ── Estilos globales ──────────────────────────────────────────────
+
+// Toolbar con gradiente morado en toda la app
+ion-toolbar[color="primary"] {
+  --background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  --color: #ffffff;
+}
+
+// Tab bar con sombra suave
+ion-tab-bar {
+  --background: #ffffff;
+  border-top: 1px solid #ede9fe;
+  box-shadow: 0 -2px 12px rgba(79, 70, 229, 0.08);
+
+  ion-tab-button {
+    --color: #9ca3af;
+    --color-selected: #4f46e5;
+
+    ion-icon {
+      font-size: 22px;
+    }
+
+    ion-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+  }
+}
+
+// Cards con sombra sutil
+ion-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.1);
+}
+
+// Items con borde violeta al seleccionar
+ion-item {
+  --highlight-color-focused: #7c3aed;
+  --highlight-color-valid: #7c3aed;
+}
+
+// Badges redondeados
+ion-badge {
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+// Botones con borde redondeado global
+ion-button {
+  --border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+// FAB con color primario
+ion-fab-button {
+  --background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  --box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+}
+
+// Elimina el color de autofill del navegador en todos los inputs
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 9999s ease-in-out 0s !important;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+}

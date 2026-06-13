@@ -1,0 +1,173 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" *ngIf="isFormMode">
+      <ion-button (click)="cancelForm()" aria-label="Volver a cursos">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>
+      {{ isFormMode ? (formMode === 'edit' ? 'Editar Curso' : 'Nuevo Curso') : (userRole === 'student' ? 'Mis Cursos' : 'Cursos') }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher *ngIf="!isFormMode" slot="fixed" (ionRefresh)="loadCourses(); $event.target.complete()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <section class="courses-shell" *ngIf="!isFormMode">
+    <div class="course-search">
+      <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar curso..." debounce="200" show-clear-button="focus"></ion-searchbar>
+      <ion-button fill="clear" size="small" aria-label="Filtrar cursos">
+        <ion-icon slot="icon-only" name="filter-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div *ngIf="loading" class="courses-loading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando cursos...</p>
+    </div>
+
+    <div *ngIf="!loading && courses.length === 0" class="courses-empty">
+      <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
+      <p>No hay cursos disponibles</p>
+    </div>
+
+    <div *ngIf="!loading && courses.length > 0 && filteredCourses.length === 0" class="courses-empty">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <p>No se encontraron cursos</p>
+    </div>
+
+    <section *ngIf="!loading" class="course-grid">
+      <article
+        *ngFor="let course of filteredCourses; let i = index"
+        class="course-card"
+        [ngClass]="getCardClass(i)"
+      >
+        <div class="course-card__top">
+          <div class="course-card__icon">
+            <ion-icon [name]="getCourseIcon(i)" aria-hidden="true"></ion-icon>
+          </div>
+          <div class="course-card__main">
+            <h2>{{ course.name }}</h2>
+            <p>Codigo: {{ course.code }}</p>
+          </div>
+          <div *ngIf="canViewCourseStudents || canManage" class="course-actions">
+            <button *ngIf="canViewCourseStudents" class="students-chip" type="button" (click)="openStudents(course, $event)">
+              Estudiantes
+            </button>
+            <button *ngIf="canManage" class="teacher-chip" type="button" (click)="openTeacherAssignment(course, $event)">
+              Profesor
+            </button>
+            <button *ngIf="canManage" class="edit-chip" type="button" (click)="openEdit(course, $event)">
+              Editar
+            </button>
+            <button *ngIf="canManage" class="delete-chip" type="button" (click)="confirmDelete(course, $event)">
+              Eliminar
+            </button>
+          </div>
+        </div>
+
+        <div class="course-card__details">
+          <div>
+            <span>Creditos</span>
+            <strong>{{ course.credits }}</strong>
+          </div>
+          <div>
+            <span>Estudiantes</span>
+            <strong>{{ getEnrolledCount(course) }}</strong>
+          </div>
+          <div class="full">
+            <span>Horario</span>
+            <strong>{{ course.schedule }}</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+  </section>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isFormMode && canManage">
+    <ion-fab-button color="success" (click)="openCreate()" aria-label="Crear curso">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <section class="form-shell" *ngIf="isFormMode">
+    <form [formGroup]="courseForm" (ngSubmit)="saveCourse()" class="course-form">
+      <div class="form-header">
+        <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+        <h2>{{ formMode === 'edit' ? 'Actualizar curso' : 'Crear curso' }}</h2>
+        <p>Completa los datos basicos del curso.</p>
+      </div>
+
+      <label>Nombre del curso</label>
+      <ion-item class="field-item" [class.field-error]="hasError('name', 'required') || hasError('name', 'minlength')">
+        <ion-input formControlName="name" type="text" placeholder="Ej: Bases de Datos"></ion-input>
+      </ion-item>
+      <p class="error-msg" *ngIf="hasError('name', 'required')">El nombre es requerido</p>
+      <p class="error-msg" *ngIf="hasError('name', 'minlength')">Minimo 3 caracteres</p>
+
+      <label>Codigo</label>
+      <ion-item class="field-item" [class.field-error]="hasError('code', 'required')">
+        <ion-input formControlName="code" type="text" placeholder="Ej: INF-402"></ion-input>
+      </ion-item>
+      <p class="error-msg" *ngIf="hasError('code', 'required')">El codigo es requerido</p>
+
+      <label>Creditos</label>
+      <ion-item class="field-item" [class.field-error]="hasError('credits', 'required') || hasError('credits', 'min')">
+        <ion-input formControlName="credits" type="number" min="1" placeholder="Ej: 4"></ion-input>
+      </ion-item>
+      <p class="error-msg" *ngIf="hasError('credits', 'required')">Los creditos son requeridos</p>
+      <p class="error-msg" *ngIf="hasError('credits', 'min')">Debe ser al menos 1 credito</p>
+
+      <label>Horario</label>
+      <div class="day-grid">
+        <button
+          *ngFor="let day of days"
+          type="button"
+          [class.active]="isDaySelected(day)"
+          (click)="toggleDay(day)"
+        >
+          {{ day }}
+        </button>
+      </div>
+
+      <div formArrayName="scheduleEntries">
+        <div
+          *ngFor="let entry of scheduleEntries.controls; let i = index"
+          class="schedule-row"
+          [formGroupName]="i"
+        >
+          <strong>{{ entry.get('day')?.value }}</strong>
+          <div class="time-grid">
+            <div>
+              <span>Hora Inicio</span>
+              <ion-item class="field-item" [class.field-error]="hasScheduleError(i, 'startTime')">
+                <ion-input formControlName="startTime" type="time"></ion-input>
+              </ion-item>
+            </div>
+            <div>
+              <span>Hora Fin</span>
+              <ion-item class="field-item" [class.field-error]="hasScheduleError(i, 'endTime')">
+                <ion-input formControlName="endTime" type="time"></ion-input>
+              </ion-item>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="error-msg" *ngIf="scheduleEntries.length === 0">Selecciona al menos un dia</p>
+
+      <ion-button expand="block" type="submit" class="save-btn" [disabled]="saving">
+        <ion-spinner *ngIf="saving" name="crescent" slot="start"></ion-spinner>
+        {{ formMode === 'edit' ? 'Actualizar curso' : 'Crear curso' }}
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" color="medium" type="button" (click)="cancelForm()">
+        Cancelar
+      </ion-button>
+    </form>
+  </section>
+</ion-content>

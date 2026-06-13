@@ -9,6 +9,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:admin": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/admin-tabs.page.spec.ts",
+    "test:courses": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/courses.page.spec.ts",
+    "test:dashboard": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/dashboard.page.spec.ts",
+    "test:evaluations": "ng test --watch=false --browsers=ChromeHeadless --include=src/app/tests/evaluation-form.page.spec.ts --include=src/app/tests/evaluation-list.page.spec.ts",
     "lint": "ng lint"
   },
   "private": true,

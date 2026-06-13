@@ -1,0 +1,155 @@
+.courses-shell,
+.form-shell {
+  min-height: 100%;
+  padding: 14px;
+  background: #f4f7fb;
+}
+
+.course-form {
+  border-radius: 8px;
+  background: #fff;
+}
+
+.course-search {
+  display: flex;
+  align-items: center;
+  max-width: 620px;
+  margin: 0 auto 16px;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.course-card {
+  --card-accent: #241d56;
+  overflow: hidden;
+  border-left: 4px solid var(--card-accent);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.course-card.blue { --card-accent: #3d86f5; }
+.course-card.green { --card-accent: #16743a; }
+.course-card.teal { --card-accent: #15998f; }
+
+.course-card__top {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  color: #fff;
+  background: var(--card-accent);
+}
+
+.course-card__main { flex: 1; }
+
+.course-card__icon {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.course-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.students-chip,
+.teacher-chip,
+.edit-chip,
+.delete-chip {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 800;
+}
+
+.students-chip,
+.teacher-chip,
+.edit-chip { background: rgba(255, 255, 255, 0.2); }
+.delete-chip { background: #dc2626; }
+
+.course-card__top h2,
+.course-card__top p,
+.form-header h2,
+.form-header p {
+  margin: 0;
+}
+
+.course-card__details,
+.day-grid,
+.time-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.course-card__details {
+  grid-template-columns: 1fr 1fr;
+  padding: 18px;
+}
+
+.course-card__details div,
+.field-item,
+.day-grid button,
+.schedule-row {
+  border-radius: 6px;
+  background: #f0f4f8;
+}
+
+.course-card__details .full { grid-column: 1 / -1; }
+
+.course-card__details span,
+.course-form label,
+.time-grid span {
+  display: block;
+  color: #27364d;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.course-form {
+  width: 100%;
+  padding: 18px;
+}
+
+.field-item {
+  margin: 6px 0 10px;
+  --background: transparent;
+  --border-color: transparent;
+}
+
+.day-grid {
+  grid-template-columns: repeat(3, 1fr);
+  margin: 8px 0 12px;
+}
+
+.day-grid button {
+  min-height: 42px;
+  border: 0;
+  color: #172554;
+  font-weight: 800;
+}
+
+.day-grid .active {
+  background: #5b3df2;
+  color: #fff;
+}
+
+.time-grid { grid-template-columns: 1fr 1fr; }
+.error-msg { color: #dc2626; }
+.save-btn { margin-top: 18px; }
+
+@media (max-width: 760px) {
+  .course-grid,
+  .time-grid {
+    grid-template-columns: 1fr;
+  }
+}

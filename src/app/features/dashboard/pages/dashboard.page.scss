@@ -1,0 +1,137 @@
+// ── Wrapper general ──────────────────────────────────────────────
+.content-wrapper {
+  padding: 12px;
+}
+
+// ── Tarjeta de bienvenida ─────────────────────────────────────────
+.welcome-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+
+  .welcome-avatar {
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 26px;
+      color: #fff;
+    }
+  }
+
+  .welcome-text {
+    flex: 1;
+    overflow: hidden;
+
+    .welcome-role {
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+      margin: 0 0 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    .welcome-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .welcome-email {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+// ── Métricas en tiles ─────────────────────────────────────────────
+.metrics-grid {
+  padding: 0;
+  margin-bottom: 8px;
+
+  ion-col {
+    padding: 4px;
+  }
+}
+
+.metric-tile {
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+
+  ion-icon {
+    font-size: 24px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .metric-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .metric-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.85);
+    margin-top: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+}
+
+.tile-red {
+  background: #ef4444;
+  color: white;
+}
+
+.tile-red ion-icon {
+  color: white;
+}
+
+.tile-indigo  { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+.tile-violet  { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+.tile-purple  { background: linear-gradient(135deg, #9333ea, #a855f7); }
+.tile-fuchsia { background: linear-gradient(135deg, #a21caf, #c026d3); }
+
+// ── Encabezado de sección ─────────────────────────────────────────
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e1b4b;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+
+

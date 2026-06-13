@@ -1,0 +1,32 @@
+ion-content {
+  --background: #f8f9fb;
+}
+
+ion-item {
+  margin-bottom: 12px;
+  --border-radius: 12px;
+}
+
+ion-input,
+ion-select {
+  font-size: 15px;
+}
+
+ion-toolbar {
+  --color: white;
+}
+
+ion-title {
+  font-weight: 600;
+}
+
+ion-button {
+  text-transform: none;
+}
+ion-label[position="stacked"] {
+  font-size: 20px !important;
+  font-weight: 400 !important; 
+  color: var(--ion-text-color);
+  opacity: 1;
+  margin-bottom: 6px;
+}

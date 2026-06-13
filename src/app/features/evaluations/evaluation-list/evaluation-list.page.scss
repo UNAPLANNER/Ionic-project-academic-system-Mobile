@@ -1,0 +1,117 @@
+
+:root {
+  --ion-color-academic-card: #2f9f46;
+  --ion-color-academic-bg: #f4f5f8;
+}
+
+.notes-page-background {
+  --background: var(--ion-color-academic-bg);
+}
+
+.academic-header {
+  --background: #5b21b6; // Morado institucional
+  --color: #ffffff;
+}
+
+.cards-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.evaluation-card-wrapper {
+  display: flex;
+}
+
+.evaluation-card {
+  background-color: var(--ion-color-academic-card);
+  color: white; // Texto blanco por defecto
+  border-radius: 12px;
+  width: 100%;
+  padding: 16px;
+  transition: transform 0.2s ease-in-out;
+
+  
+  &.academic-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .exam-type-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .exam-icon {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    .score-badge-container {
+      background-color: white;
+      color: #1e293b;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 60px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+      .score-number {
+        font-size: 0.85rem;
+        font-weight: bold;
+      }
+      .score-percent {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+    }
+  }
+
+  .card-body-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .data-field-group {
+      .field-label {
+        display: block;
+        font-size: 0.65rem;
+        font-weight: bold;
+        color: rgba(255, 255, 255, 0.7); 
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .field-value {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Styles for when there is no data
+.no-data-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  .no-data-icon {
+    font-size: 64px;
+  }
+}
